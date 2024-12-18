@@ -1,4 +1,4 @@
-import "./globals.css";
+import "./sass/index.scss";
 import { NextAuthProvider } from "./providers";
 
 export default function RootLayout({

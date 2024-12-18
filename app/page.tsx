@@ -1,25 +1,17 @@
 "use client";
-
-import styles from "./page.module.css";
-import { signIn } from "next-auth/react";
-const GithubSignInButton = () => {
-	const handleClick = (): void => {
-		signIn("github");
-	};
-
-	return (
-		<button type="button" onClick={handleClick}>
-			<span>Continue with Github</span>
-		</button>
-	);
-};
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Nav } from "./components/Nav";
+import { Loader } from "./components/Loader";
 
 export default function SignIn() {
+	const { status, data } = useSession();
+
 	return (
-		<div className={styles.page}>
-			<main className={styles.main}>
-				<h1>Home</h1>
-				<GithubSignInButton />
+		<div>
+			<main>
+				<Nav name={data?.user ? data.user.email : null} />
+				<h1>Home, hello</h1>
 			</main>
 		</div>
 	);

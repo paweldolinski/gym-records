@@ -1,12 +1,11 @@
-import { NextAuthOptions } from "next-auth";
-import { redirect, useRouter } from "next/navigation";
-
-import CredentialsProvider from "next-auth/providers/credentials";
+import { log } from "console";
+import NextAuth, { NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import GithubProvider from "next-auth/providers/github";
-import { useSession } from "next-auth/react";
 
-export const authConfig: NextAuthOptions = {
+export const authOptions: NextAuthConfig = {
+	session: {
+		strategy: "jwt",
+	},
 	providers: [
 		// CredentialsProvider({
 		// 	name: "Sign in",
@@ -44,17 +43,19 @@ export const authConfig: NextAuthOptions = {
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
 		}),
 	],
+	callbacks: {
+		jwt: async ({ user, token, trigger, session }) => {
+			// if (trigger === "update") {
+			// 	return { ...token, ...session.user };
+			// }
+
+			console.log("jwt", { user: user, token: token, session: session });
+			return { ...token, ...user };
+		},
+		session: async ({ session, token, user }) => {
+			console.log("session", session, token, user);
+
+			return session;
+		},
+	},
 };
-
-//export async function loginIsRequiredServer() {
-// 	const session = await getServerSession(authConfig);
-// 	if (!session) return redirect("/");
-// }
-
-// export function loginIsRequiredClient() {
-// 	if (typeof window !== "undefined") {
-// 		const session = useSession();
-// 		const router = useRouter();
-// 		if (!session) router.push("/");
-// 	}
-// }
