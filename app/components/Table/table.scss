@@ -1,0 +1,45 @@
+.table {
+    border: solid black 1px;
+    margin: 30px auto 0 auto;
+    max-width: 900px;
+
+    &__sub-header-wrapper {
+        display: flex;
+        align-items: center;
+
+        &--top {
+            border-bottom: 1px solid black;
+        }
+
+    }
+
+    &__cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-right: solid black 1px;
+        flex: 1;
+        min-height: 44px;
+
+        &--half {
+            flex: 0.5;
+        }
+        
+
+        &[data-type='user'], 
+        &.user {
+            min-width: 300px;
+        }
+
+        &:last-child{
+            border-right: none;
+        }
+    }
+
+    &__row-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-top: solid 1px black;
+    }
+}

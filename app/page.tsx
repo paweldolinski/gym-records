@@ -1,17 +1,17 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Nav } from "./components/Nav";
-import { Loader } from "./components/Loader";
+import { Table } from "./components/Table";
 
 export default function SignIn() {
-	const { status, data } = useSession();
+	const { status, data, update } = useSession();
+	console.log(data);
 
 	return (
 		<div>
 			<main>
 				<Nav name={data?.user ? data.user.email : null} />
-				<h1>Home, hello</h1>
+				<Table />
 			</main>
 		</div>
 	);
