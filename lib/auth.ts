@@ -1,6 +1,13 @@
-import { log } from "console";
-import NextAuth, { NextAuthConfig } from "next-auth";
+import { NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { connectDB } from "./mongodb";
+import User from "../models/User";
+
+const emptyRecords = [
+	{ exercise: "squad", classic: 0, gear: 0 },
+	{ exercise: "press", classic: 0, gear: 0 },
+	{ exercise: "lift", classic: 0, gear: 0 },
+];
 
 export const authOptions: NextAuthConfig = {
 	session: {
@@ -15,27 +22,31 @@ export const authOptions: NextAuthConfig = {
 		// 			type: "email",
 		// 			placeholder: "example@example.com",
 		// 		},
-		// 		password: { label: "Password", type: "password" },
 		// 	},
 		// 	async authorize(credentials) {
-		// 		if (!credentials || !credentials.email || !credentials.password)
-		// 			return null;
+		// 		await connectDB();
+		// 		const user = await User.findOne({
+		// 			email: credentials?.email,
+		// 		});
 
-		// 		console.log("cre", credentials);
+		// 		if (!user) {
+		// 			console.log("no user");
+		// 			const user = await User.create({
+		// 				email: credentials?.email,
+		// 				records: emptyRecords,
+		// 			});
 
-		// 		// const dbUser = await prisma.user.findFirst({
-		// 		// 	where: { email: credentials.email },
-		// 		// });
+		// 			return user;
+		// 		}
 
-		// 		//Verify Password here
-		// 		//We are going to use a simple === operator
-		// 		//In production DB, passwords should be encrypted using something like bcrypt...
-		// 		// if (dbUser && dbUser.password === credentials.password) {
-		// 		// 	const { password, createdAt, id, ...dbUserWithoutPassword } = dbUser;
-		// 		// 	return dbUserWithoutPassword as User;
-		// 		// }
+		// 		console.log(user, "user");
 
-		// 		return null;
+		// 		// const passwordMatch = await bcrypt.compare(
+		// 		// 	credentials!.password,
+		// 		// 	user.password,
+		// 		// );
+		// 		// if (!passwordMatch) throw new Error("Wrong Password");
+		// 		return user;
 		// 	},
 		// }),
 		GoogleProvider({
@@ -44,18 +55,40 @@ export const authOptions: NextAuthConfig = {
 		}),
 	],
 	callbacks: {
-		jwt: async ({ user, token, trigger, session }) => {
-			// if (trigger === "update") {
-			// 	return { ...token, ...session.user };
-			// }
+		signIn: async ({ user, account }) => {
+			try {
+				await connectDB();
+				const existingUser = await User.findOne({ email: user.email });
 
-			console.log("jwt", { user: user, token: token, session: session });
-			return { ...token, ...user };
+				if (!existingUser) {
+					await User.create({
+						email: user.email,
+						name: user.name,
+						records: emptyRecords,
+					});
+
+					return true;
+				}
+
+				return true;
+			} catch (err) {
+				console.log("Error saving user", err);
+				return false;
+			}
+		},
+		jwt: async ({ token, account, profile, trigger, session }) => {
+			const existingUser = await User.findOne({ email: token.email });
+
+			// console.log("jwt", { account: account, token: token, profile: profile });
+
+			return { ...token, records: existingUser.records, id: existingUser._id };
 		},
 		session: async ({ session, token, user }) => {
-			console.log("session", session, token, user);
-
-			return session;
+			// console.log(session, "--------------");
+			return {
+				...session,
+				user: { ...session.user, records: token.records, id: token.id },
+			};
 		},
 	},
 };

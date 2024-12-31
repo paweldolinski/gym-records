@@ -1,17 +1,24 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Nav } from "./components/Nav";
-import { Loader } from "./components/Loader";
+import { Table } from "./components/Table";
+import { useState } from "react";
+import { Modal } from "./components/Modal";
 
 export default function SignIn() {
-	const { status, data } = useSession();
+	const [isEdit, setIsEdit] = useState(false);
+	const { status, data, update } = useSession();
+	console.log(data);
+	const onSubmit = (e) => {
+		e.preventDefault();
+		console.log("elo", e);
+	};
 
 	return (
 		<div>
 			<main>
-				<Nav name={data?.user ? data.user.email : null} />
-				<h1>Home, hello</h1>
+				<Nav name={data?.user ? data.user.email : null} openEdit={setIsEdit} />
+				<Table />
 			</main>
 		</div>
 	);
