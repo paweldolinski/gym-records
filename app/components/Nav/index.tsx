@@ -15,7 +15,9 @@ export const Nav: React.FC<NavProps> = ({ name }) => {
 			{name === null ? (
 				<Button label="Login" onClick={() => push("/api/auth/signin")} />
 			) : (
-				<Button label="Logout" onClick={() => signOut()} />
+				<>
+					<Button label="Logout" onClick={() => signOut()} />
+				</>
 			)}
 		</div>
 	);

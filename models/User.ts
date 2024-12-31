@@ -2,6 +2,7 @@ import mongoose, { Schema, model } from "mongoose";
 
 export interface UserDocument {
 	email: string;
+	name: string;
 	records: [];
 	createdAt: Date;
 	updatedAt: Date;
@@ -13,10 +14,9 @@ const UserSchema = new Schema<UserDocument>(
 			type: String,
 			unique: true,
 			required: [true, "Email is required"],
-			// match: [
-			// 	/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-			// 	"Email is invalid",
-			// ],
+		},
+		name: {
+			type: String,
 		},
 		records: {
 			type: [

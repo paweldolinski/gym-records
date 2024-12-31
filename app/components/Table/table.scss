@@ -21,11 +21,16 @@
         flex: 1;
         min-height: 44px;
 
-        &--half {
-            flex: 0.5;
+        &--input {
+            border: none;
+            border-right: solid black 1px;
+            width: 100%;
+            height: 44px;
+            &:nth-child(even) {
+                border: none;
+            }
         }
         
-
         &[data-type='user'], 
         &.user {
             min-width: 300px;
@@ -37,9 +42,27 @@
     }
 
     &__row-wrapper {
+        position: relative;
+
+        &:nth-child(odd) {
+            background-color: rgba(0,0,0,0.2)
+        }
+    }
+
+    &__cells-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
         border-top: solid 1px black;
+    }
+
+    &__btns-wrapper {
+        position: absolute;
+        right: -130px;
+        top: 10px;
+    }
+
+    &__btn {
+        margin-right: 10px;
     }
 }

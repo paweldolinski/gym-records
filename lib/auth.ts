@@ -1,10 +1,7 @@
-import { Account, NextAuthConfig } from "next-auth";
+import { NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
 import { connectDB } from "./mongodb";
 import User from "../models/User";
-import { signIn } from "next-auth/react";
-import { log } from "console";
 
 const emptyRecords = [
 	{ exercise: "squad", classic: 0, gear: 0 },
@@ -59,38 +56,39 @@ export const authOptions: NextAuthConfig = {
 	],
 	callbacks: {
 		signIn: async ({ user, account }) => {
-			if (account?.provider === "google") {
-				console.log("user", user, "account", account);
-				try {
-					await connectDB();
-					const existingUser = await User.findOne({ email: user.email });
+			try {
+				await connectDB();
+				const existingUser = await User.findOne({ email: user.email });
 
-					if (!existingUser) {
-						await User.create({
-							email: user.email,
-							records: emptyRecords,
-						});
-
-						return true;
-					}
+				if (!existingUser) {
+					await User.create({
+						email: user.email,
+						name: user.name,
+						records: emptyRecords,
+					});
 
 					return true;
-				} catch (err) {
-					console.log("Error saving user", err);
-					return false;
 				}
+
+				return true;
+			} catch (err) {
+				console.log("Error saving user", err);
+				return false;
 			}
 		},
 		jwt: async ({ token, account, profile, trigger, session }) => {
 			const existingUser = await User.findOne({ email: token.email });
 
-			console.log("jwt", { account: account, token: token, profile: profile });
+			// console.log("jwt", { account: account, token: token, profile: profile });
 
-			return { ...token, records: existingUser.records };
+			return { ...token, records: existingUser.records, id: existingUser._id };
 		},
 		session: async ({ session, token, user }) => {
-			console.log(session, "--------------");
-			return { ...session, user: { ...session.user, records: token.records } };
+			// console.log(session, "--------------");
+			return {
+				...session,
+				user: { ...session.user, records: token.records, id: token.id },
+			};
 		},
 	},
 };

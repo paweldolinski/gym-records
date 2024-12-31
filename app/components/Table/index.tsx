@@ -4,8 +4,9 @@ import { RowTable } from "./RowTable";
 import { Loader } from "../Loader";
 
 interface UsersData {
-	email: string;
+	email?: string;
 	records: [];
+	name: string;
 	_id: string;
 }
 
@@ -14,7 +15,7 @@ export const Table = () => {
 	const [isLoading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch("/api/users")
+		fetch("/api/users", { method: "GET" })
 			.then((res) => res.json())
 			.then((data: UsersData[]) => {
 				setData(data);
@@ -22,14 +23,19 @@ export const Table = () => {
 			});
 	}, []);
 
-	console.log(data, "data");
 	return isLoading ? (
 		<Loader />
 	) : (
 		<div className="table">
 			<HeaderTable />
-			{data?.map(({ email, records, _id }) => (
-				<RowTable email={email} records={records} key={_id} />
+			{data?.map(({ records, _id, name }) => (
+				<RowTable
+					name={name}
+					records={records}
+					key={_id}
+					id={_id}
+					isOwner={true}
+				/>
 			))}
 		</div>
 	);
