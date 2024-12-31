@@ -17,7 +17,10 @@ export default function SignIn() {
 	return (
 		<div>
 			<main>
-				<Nav name={data?.user ? data.user.email : null} openEdit={setIsEdit} />
+				<Nav
+					name={data?.user ? data.user.email : null}
+					img={data?.user?.image}
+				/>
 				<Table />
 			</main>
 		</div>
