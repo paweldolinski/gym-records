@@ -12,7 +12,7 @@ export const Nav: React.FC<NavProps> = ({ name, img }) => {
 
 	return (
 		<div className="nav">
-			{name === null ? (
+			{name === "" ? (
 				<Button label="Login" onClick={() => push("/api/auth/signin")} />
 			) : (
 				<>

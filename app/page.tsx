@@ -9,18 +9,14 @@ export default function SignIn() {
 	const [isEdit, setIsEdit] = useState(false);
 	const { status, data, update } = useSession();
 	console.log(data);
-	const onSubmit = (e) => {
-		e.preventDefault();
-		console.log("elo", e);
-	};
+
+	const name = data?.user?.email ?? "";
+	const img = data?.user?.image ?? "";
 
 	return (
 		<div>
 			<main>
-				<Nav
-					name={data?.user ? data.user.email : null}
-					img={data?.user?.image}
-				/>
+				<Nav name={name} img={img} />
 				<Table />
 			</main>
 		</div>
