@@ -1,6 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { Buttons } from "./Buttons";
 
 interface RecordsProps {
 	exercise: string;
@@ -16,7 +17,7 @@ interface RowTableProps {
 	isOwner: boolean;
 }
 
-export const RowTable = ({ name, records, id }: RowTableProps) => {
+export const RowTable = ({ name, records, id, email }: RowTableProps) => {
 	const [isEdit, setIsEdit] = useState(false);
 	const [inputData, setInputData] = useState<RecordsProps[]>([
 		{ exercise: "squat", classic: "", gear: "" },
@@ -41,7 +42,7 @@ export const RowTable = ({ name, records, id }: RowTableProps) => {
 		);
 	};
 
-	const onSubmit = async () => {
+	const onSave = async () => {
 		setIsEdit(false);
 
 		try {
@@ -68,13 +69,11 @@ export const RowTable = ({ name, records, id }: RowTableProps) => {
 		);
 	}, [records]);
 
-	console.log(inputData, "data");
-
 	return (
 		<div className="table__row-wrapper">
 			<div className="table__cells-wrapper">
 				<div className="table__cell" data-type="user">
-					{name}
+					{email}
 				</div>
 				{inputData.map(({ exercise, classic, gear }) => (
 					<div className="table__cell" key={exercise}>
@@ -84,6 +83,8 @@ export const RowTable = ({ name, records, id }: RowTableProps) => {
 							onChange={(e) => handleInputChange(e, exercise, "classic")}
 							value={classic}
 							disabled={!isEdit}
+							name={exercise}
+							data-type="classic"
 						/>
 						<input
 							className="table__cell--input"
@@ -91,29 +92,14 @@ export const RowTable = ({ name, records, id }: RowTableProps) => {
 							onChange={(e) => handleInputChange(e, exercise, "gear")}
 							value={gear}
 							disabled={!isEdit}
+							name={exercise}
+							data-type="gear"
 						/>
 					</div>
 				))}
 			</div>
 			{isOwner ? (
-				<div className="table__btns-wrapper">
-					<button
-						onClick={() => setIsEdit(!isEdit)}
-						type="button"
-						className="table__btn"
-					>
-						{isEdit ? "close" : "Edit"}
-					</button>
-					{isEdit ? (
-						<button
-							onClick={() => onSubmit()}
-							type="button"
-							className="table__btn"
-						>
-							Save
-						</button>
-					) : null}
-				</div>
+				<Buttons setIsEdit={setIsEdit} isEdit={isEdit} onSave={onSave} />
 			) : null}
 		</div>
 	);
