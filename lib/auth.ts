@@ -5,7 +5,7 @@ import { connectDB } from "./mongodb";
 import User from "../models/User";
 
 const emptyRecords = [
-	{ exercise: "squad", classic: 0, gear: 0 },
+	{ exercise: "squat", classic: 0, gear: 0 },
 	{ exercise: "press", classic: 0, gear: 0 },
 	{ exercise: "lift", classic: 0, gear: 0 },
 ];
@@ -66,11 +66,14 @@ export const authOptions: NextAuthConfig = {
 				const existingUser = await User.findOne({ email: user.email });
 
 				if (!existingUser) {
-					await User.create({
+					const newUser = await User.create({
 						email: user.email,
 						name: user.name,
 						records: emptyRecords,
+						isAdmin: false,
+						approved: false,
 					});
+					console.log(newUser, "-=-=-=-=");
 
 					return true;
 				}
@@ -82,17 +85,31 @@ export const authOptions: NextAuthConfig = {
 			}
 		},
 		jwt: async ({ token, account, profile, trigger, session }) => {
-			const existingUser = await User.findOne({ email: token.email });
+			const { records, _id, isAdmin, approved } = await User.findOne({
+				email: token.email,
+			});
 
-			// console.log("jwt", { account: account, token: token, profile: profile });
+			// console.log("jwt", { trigger: trigger });
 
-			return { ...token, records: existingUser.records, id: existingUser._id };
+			return {
+				...token,
+				records: records,
+				id: _id,
+				isAdmin: isAdmin,
+				approved: approved,
+			};
 		},
 		session: async ({ session, token, user }) => {
-			// console.log(session, "--------------");
+			const { records, id, isAdmin, approved } = token;
 			return {
 				...session,
-				user: { ...session.user, records: token.records, id: token.id },
+				user: {
+					...session.user,
+					records: records,
+					id: id,
+					isAdmin: isAdmin,
+					approved: approved,
+				},
 			};
 		},
 	},

@@ -1,7 +1,12 @@
 import { connectDB } from "../../../lib/mongodb";
 import User, { type UserDocument } from "../../../models/User";
-
 import { NextResponse } from "next/server";
+
+interface UpdateRequestBody {
+	id: string;
+	records?: [];
+	type?: "approve" | "reject";
+}
 
 export async function GET() {
 	try {
@@ -17,25 +22,59 @@ export async function GET() {
 
 export async function POST(req: Request) {
 	try {
-		const body = await req.json();
-		const { id, records } = body;
+		const body: UpdateRequestBody = await req.json();
+		const { id, records, type } = body;
+
+		if (!id) {
+			return NextResponse.json({ message: "ID is required" }, { status: 400 });
+		}
 
 		await connectDB();
 
-		const update = await User.updateOne(
-			{ _id: id },
-			{ $set: { records: records } },
-		);
-
-		if (update.matchedCount === 1 && update.modifiedCount === 1) {
-			return NextResponse.json(
-				{ message: "Updating account successfully" },
-				{ status: 201 },
+		if (records) {
+			const updateAndReturn = await User.findOneAndUpdate(
+				{ _id: id },
+				{ $set: { records: records } },
+				{ returnNewDocument: true, returnDocument: "after" },
 			);
+			if (updateAndReturn) {
+				return NextResponse.json(
+					{ message: "Updating account successfully", user: updateAndReturn },
+					{ status: 201 },
+				);
+			}
+		}
+
+		if (type === "approve") {
+			const approveRecords = await User.findOneAndUpdate(
+				{ _id: id },
+				{ $set: { approved: true } },
+				{ returnNewDocument: true, returnDocument: "after" },
+			);
+			if (approveRecords) {
+				return NextResponse.json(
+					{ message: "Account approved successfully" },
+					{ status: 201 },
+				);
+			}
+		}
+
+		if (type === "reject") {
+			const approveRecords = await User.findOneAndUpdate(
+				{ _id: id },
+				{ $set: { approved: false } },
+				{ returnNewDocument: true, returnDocument: "after" },
+			);
+			if (approveRecords) {
+				return NextResponse.json(
+					{ message: "Account approved successfully" },
+					{ status: 201 },
+				);
+			}
 		}
 
 		return NextResponse.json(
-			{ message: "Updating account unsuccessfully", re: body },
+			{ message: "Updating account unsuccessfully" },
 			{ status: 404 },
 		);
 	} catch (error) {

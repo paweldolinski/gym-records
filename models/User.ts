@@ -4,6 +4,8 @@ export interface UserDocument {
 	email: string;
 	name: string;
 	records: [];
+	isAdmin: boolean;
+	approved: boolean;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -26,6 +28,14 @@ const UserSchema = new Schema<UserDocument>(
 					gear: { type: String },
 				},
 			],
+		},
+		isAdmin: {
+			type: Boolean,
+			default: false,
+		},
+		approved: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	{

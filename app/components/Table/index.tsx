@@ -10,17 +10,40 @@ interface Record {
 	_id: string;
 }
 
-interface UsersData {
+export interface UsersData {
 	email?: string;
 	records: Record[];
 	name: string;
 	_id: string;
+	isAdmin: boolean;
+	approved: boolean;
 }
 
 interface SortingExercise {
-	exercise: "lift" | "squad" | "press";
+	exercise: "lift" | "squat" | "press";
 	type: "classic" | "gear";
 }
+
+const getUsers = async (
+	setData: React.Dispatch<React.SetStateAction<UsersData[] | null>>,
+	setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+): Promise<void> => {
+	try {
+		const res = await fetch("/api/users", { method: "GET" });
+
+		if (!res.ok) {
+			throw new Error("Błąd podczas pobierania danych użytkowników");
+		}
+		const data: UsersData[] = await res.json();
+
+		setData(data);
+	} catch (error) {
+		console.error(error);
+		alert("Nie udało się załadować danych użytkowników");
+	} finally {
+		setLoading(false);
+	}
+};
 
 export const Table = () => {
 	const [data, setData] = useState<UsersData[] | null>(null);
@@ -32,6 +55,7 @@ export const Table = () => {
 	const [isLoading, setLoading] = useState(true);
 
 	const sortingData = useCallback(() => {
+		if (!data) return;
 		const sortedData = [...(data || [])]?.sort((a, b) => {
 			const aValue =
 				a.records.find(
@@ -49,26 +73,42 @@ export const Table = () => {
 		setSortedData(sortedData);
 	}, [data, sortingExercise]);
 
-	const setSortingExerciseAndType = (
-		event: React.MouseEvent<HTMLButtonElement>,
-	) => {
+	const setSortingExerciseAndType = (event) => {
 		const { name, type } = event.currentTarget.dataset;
 		if (!name || !type) return;
 
 		const obj = {
-			exercise: name as "lift" | "squad" | "press",
+			exercise: name as "lift" | "squat" | "press",
 			type: type as "classic" | "gear",
 		};
 		setSortingExercise(obj);
 	};
 
-	useEffect(() => {
-		fetch("/api/users", { method: "GET" })
-			.then((res) => res.json())
-			.then((data: UsersData[]) => {
-				setData(data);
-				setLoading(false);
+	const handleUserAction = async (
+		id: string,
+		actionType: "approve" | "reject",
+	) => {
+		setLoading(true);
+
+		try {
+			const { status } = await fetch("/api/users", {
+				method: "POST",
+				body: JSON.stringify({ type: actionType, id }),
 			});
+
+			if (status !== 201) {
+				throw new Error("Nie udało się zaktualizować użytkownika");
+			}
+
+			getUsers(setData, setLoading);
+		} catch (error) {
+			console.error(error);
+			alert("Wystąpił błąd podczas aktualizacji użytkownika");
+		}
+	};
+
+	useEffect(() => {
+		getUsers(setData, setLoading);
 	}, []);
 
 	useEffect(() => {
@@ -80,18 +120,25 @@ export const Table = () => {
 	return isLoading ? (
 		<Loader />
 	) : (
-		<div className="table">
-			<HeaderTable setSortingExercise={setSortingExerciseAndType} />
-			{(sortedData || data)?.map(({ records, _id, name, email }) => (
-				<RowTable
-					name={name}
-					email={email}
-					records={records}
-					key={_id}
-					id={_id}
-					isOwner={true}
-				/>
-			))}
+		<div className="table container">
+			<div className="table__table-wrapper">
+				<HeaderTable setSortingExerciseAndType={setSortingExerciseAndType} />
+				{(sortedData || data)?.map(
+					({ records, _id, name, email, isAdmin, approved }) => (
+						<RowTable
+							name={name}
+							email={email}
+							records={records}
+							key={_id}
+							id={_id}
+							isOwner={true}
+							setData={setData}
+							handleUserAction={handleUserAction}
+							approved={approved}
+						/>
+					),
+				)}
+			</div>
 		</div>
 	);
 };
