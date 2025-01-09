@@ -60,7 +60,7 @@ export const authOptions: NextAuthConfig = {
 		}),
 	],
 	callbacks: {
-		signIn: async ({ user, account }) => {
+		signIn: async ({ user }) => {
 			try {
 				await connectDB();
 				const existingUser = await User.findOne({ email: user.email });
@@ -84,7 +84,7 @@ export const authOptions: NextAuthConfig = {
 				return false;
 			}
 		},
-		jwt: async ({ token, account, profile, trigger, session }) => {
+		jwt: async ({ token }) => {
 			const { records, _id, isAdmin, approved } = await User.findOne({
 				email: token.email,
 			});
@@ -99,7 +99,7 @@ export const authOptions: NextAuthConfig = {
 				approved: approved,
 			};
 		},
-		session: async ({ session, token, user }) => {
+		session: async ({ session, token }) => {
 			const { records, id, isAdmin, approved } = token;
 			return {
 				...session,

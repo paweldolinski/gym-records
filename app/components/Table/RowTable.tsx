@@ -25,7 +25,6 @@ export const RowTable = ({
 	name,
 	records,
 	id,
-	email,
 	setData,
 	approved,
 	handleUserAction,
@@ -130,10 +129,7 @@ export const RowTable = ({
 				<OwnerButtons setIsEdit={setIsEdit} isEdit={isEdit} onSave={onSave} />
 			) : null}
 			{isAdmin ? (
-				<AdminButtons
-					onApprove={() => handleUserAction(id, "approve")}
-					onReject={() => handleUserAction(id, "reject")}
-				/>
+				<AdminButtons onApprove={() => handleUserAction(id, "approve")} />
 			) : null}
 		</div>
 	);

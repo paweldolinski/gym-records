@@ -73,7 +73,9 @@ export const Table = () => {
 		setSortedData(sortedData);
 	}, [data, sortingExercise]);
 
-	const setSortingExerciseAndType = (event) => {
+	const setSortingExerciseAndType = (
+		event: React.MouseEvent<HTMLDivElement>,
+	) => {
 		const { name, type } = event.currentTarget.dataset;
 		if (!name || !type) return;
 
@@ -124,7 +126,7 @@ export const Table = () => {
 			<div className="table__table-wrapper">
 				<HeaderTable setSortingExerciseAndType={setSortingExerciseAndType} />
 				{(sortedData || data)?.map(
-					({ records, _id, name, email, isAdmin, approved }) => (
+					({ records, _id, name, email, approved }) => (
 						<RowTable
 							name={name}
 							email={email}
