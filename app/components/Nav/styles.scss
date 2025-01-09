@@ -1,23 +1,34 @@
 .nav {
-    display: flex;
     border-bottom: solid black 2px;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 10px;
+    padding: 10px 20px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: white;
+    width: 100vw;
+    background-image: linear-gradient(to bottom, #000000c4, #00000073), url("../../assets/360_F_945263774_SJ0CFRi4hwCr8xlaChdA1AJ5bawFBJLV.jpg");
+
+    &__wrapper {
+        align-items: center;
+        justify-content: space-between;
+        display: flex;
+    }
 
     &__user-box {
         margin-right: 10px;
         display: flex;
         align-items: center;
 
-        p{
+        p {
             margin: 0;
+            color: white;
         }
     }
 
     &__avatar {
-        width: 50px;
         border-radius: 50%;
         margin-right: 10px;
+        overflow: hidden;
     }
 }

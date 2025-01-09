@@ -1,8 +1,9 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { Buttons } from "./Buttons";
-
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import type { UsersData } from "./index";
+import { OwnerButtons } from "./OwnerButtons";
+import { AdminButtons } from "./AdminButtons";
 interface RecordsProps {
 	exercise: string;
 	classic: string;
@@ -15,9 +16,20 @@ interface RowTableProps {
 	name: string;
 	id: string;
 	isOwner: boolean;
+	setData: Dispatch<SetStateAction<UsersData[] | null>>;
+	approved: boolean;
+	handleUserAction: (id: string, actionType: "approve" | "reject") => void;
 }
 
-export const RowTable = ({ name, records, id, email }: RowTableProps) => {
+export const RowTable = ({
+	name,
+	records,
+	id,
+	email,
+	setData,
+	approved,
+	handleUserAction,
+}: RowTableProps) => {
 	const [isEdit, setIsEdit] = useState(false);
 	const [inputData, setInputData] = useState<RecordsProps[]>([
 		{ exercise: "squat", classic: "", gear: "" },
@@ -26,7 +38,8 @@ export const RowTable = ({ name, records, id, email }: RowTableProps) => {
 	]);
 
 	const { data } = useSession();
-	const isOwner = data?.user.id === id;
+	const isOwner = data?.user?.id === id;
+	const isAdmin = data?.user?.isAdmin;
 
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -45,15 +58,27 @@ export const RowTable = ({ name, records, id, email }: RowTableProps) => {
 	const onSave = async () => {
 		setIsEdit(false);
 
+		console.log("onSave");
+
 		try {
 			const response = await fetch("/api/users", {
 				method: "POST",
 				body: JSON.stringify({ id: id, records: inputData }),
 			});
 
-			const json = await response.json();
+			const {
+				user: { records },
+				message,
+			} = await response.json();
+			console.log(message);
 
-			console.log(json);
+			setData((prev) =>
+				prev
+					? prev?.map((user) =>
+							user._id === id ? { ...user, records: records } : user,
+						)
+					: null,
+			);
 		} catch (e) {
 			console.log(e);
 		}
@@ -71,9 +96,12 @@ export const RowTable = ({ name, records, id, email }: RowTableProps) => {
 
 	return (
 		<div className="table__row-wrapper">
-			<div className="table__cells-wrapper">
+			<div className={`table__badge ${approved ? "approved" : ""}`}>
+				&#10004;
+			</div>
+			<div className={`table__cells-wrapper ${isEdit ? "active" : ""}`}>
 				<div className="table__cell" data-type="user">
-					{email}
+					{name}
 				</div>
 				{inputData.map(({ exercise, classic, gear }) => (
 					<div className="table__cell" key={exercise}>
@@ -99,7 +127,13 @@ export const RowTable = ({ name, records, id, email }: RowTableProps) => {
 				))}
 			</div>
 			{isOwner ? (
-				<Buttons setIsEdit={setIsEdit} isEdit={isEdit} onSave={onSave} />
+				<OwnerButtons setIsEdit={setIsEdit} isEdit={isEdit} onSave={onSave} />
+			) : null}
+			{isAdmin ? (
+				<AdminButtons
+					onApprove={() => handleUserAction(id, "approve")}
+					onReject={() => handleUserAction(id, "reject")}
+				/>
 			) : null}
 		</div>
 	);

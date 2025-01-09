@@ -1,0 +1,22 @@
+
+* {
+    font-family: "geist", sans-serif;
+}
+
+body {
+    background-image: linear-gradient(to top, #000000c4, #00000073), url("../assets//ronnie-coleman-squat-barbell-1109.webp");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+
+}
+
+main {
+    padding-top: 100px;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}

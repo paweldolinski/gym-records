@@ -2,21 +2,17 @@
 import { useSession } from "next-auth/react";
 import { Nav } from "./components/Nav";
 import { Table } from "./components/Table";
-import { useState } from "react";
-import { Modal } from "./components/Modal";
 
 export default function SignIn() {
-	const [isEdit, setIsEdit] = useState(false);
-	const { status, data, update } = useSession();
-	console.log(data);
+	const { data } = useSession();
 
 	const name = data?.user?.email ?? "";
 	const img = data?.user?.image ?? "";
 
 	return (
-		<div>
+		<div className="main-container">
+			<Nav name={name} img={img} />
 			<main>
-				<Nav name={name} img={img} />
 				<Table />
 			</main>
 		</div>

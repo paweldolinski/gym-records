@@ -1,7 +1,49 @@
-.table {
-    border: solid black 1px;
+.table {     
     margin: 30px auto 0 auto;
-    max-width: 900px;
+    padding: 0 120px 0 30px;
+    max-width: unset;
+    width: 400px;
+    overflow-x: scroll;
+
+    @media (min-width: $mobileBreakpoint) {
+        width: 90vw;
+        overflow: hidden
+    }
+
+    @media screen and (min-aspect-ratio: 16/9) {
+        width: unset;
+    }
+
+
+    @media (min-width: $desktopBreakpoint) {
+        max-width: 1100px;
+        width: unset;
+    }
+    
+
+    &__table-wrapper {
+        border: solid black 1px;
+        position: relative;
+        background-color: white;
+        width: 480px;
+        font-size: 10px;
+
+        @media (min-width: $mobileBreakpoint) {
+            width: 100%;
+            font-size: 16px;
+        }
+
+        @media screen and (min-aspect-ratio: 16/9) {
+            width: 500px;
+          }
+    
+        @media (min-width: $desktopBreakpoint) {
+            max-width: 900px;
+            font-size: 18px;
+            width: unset;
+        }
+    }
+
 
     &__sub-header-wrapper {
         display: flex;
@@ -13,13 +55,24 @@
 
     }
 
+    &__cells-wrapper {
+        display: flex;
+        align-items: center;
+        border-top: solid 1px black;
+
+        &.active {
+            border:  solid 3px;
+        }
+    }
+
     &__cell {
         display: flex;
         align-items: center;
         justify-content: center;
         border-right: solid black 1px;
-        flex: 1;
+        width: 144px;
         min-height: 44px;
+        flex: 1;
 
         &--input {
             border: none;
@@ -33,7 +86,32 @@
         
         &[data-type='user'], 
         &.user {
-            min-width: 300px;
+            min-width: 120px;
+            flex: initial;
+
+            @media (min-width: $tabletBreakpoint) {
+                min-width: 300px;
+            }
+
+            @media screen and (orientation:landscape) {
+                width: 120px;
+              }
+        }
+
+        &--half {
+            position: relative;
+            cursor: pointer;
+
+            &:after {
+                content: '';
+                position: absolute;
+                right: 5px;
+                width: 10px;
+                height: 10px;
+                background-image: url("../../assets/sort-up-ascending.svg");
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
         }
 
         &:last-child{
@@ -49,16 +127,21 @@
         }
     }
 
-    &__cells-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-top: solid 1px black;
+    &__badge {
+        position: absolute;
+        left: -20px;
+        top: 10px;
+        color: orange;
+
+        &.approved {
+            color: #1dff00
+        }
     }
 
     &__btns-wrapper {
+        width: 150px;
         position: absolute;
-        right: -130px;
+        right: -161px;
         top: 10px;
     }
 

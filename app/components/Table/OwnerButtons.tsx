@@ -4,7 +4,7 @@ interface ButtonsProps {
 	onSave: () => void;
 }
 
-export const Buttons = ({ setIsEdit, isEdit, onSave }: ButtonsProps) => {
+export const OwnerButtons = ({ setIsEdit, isEdit, onSave }: ButtonsProps) => {
 	return (
 		<div className="table__btns-wrapper">
 			<button
