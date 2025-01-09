@@ -18,9 +18,7 @@ const headerData = [
 	{ exercise: "lift", types: ["classic", "gear"] },
 ];
 interface HeaderTableProps {
-	setSortingExerciseAndType: (
-		event: React.MouseEvent<HTMLButtonElement>,
-	) => void;
+	setSortingExerciseAndType: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export const HeaderTable = ({
