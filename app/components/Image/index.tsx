@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import Image, { type StaticImageData } from "next/image";
-import type { StaticImport } from "next/dist/shared/lib/get-img-props";
+import Image from "next/image";
 
 interface ImageWithFallbackProps {
 	src?: string;

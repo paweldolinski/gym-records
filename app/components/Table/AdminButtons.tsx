@@ -1,9 +1,9 @@
 interface ButtonsProps {
 	onApprove: () => void;
-	onReject: () => void;
+	// onReject: () => void;
 }
 
-export const AdminButtons = ({ onApprove, onReject }: ButtonsProps) => {
+export const AdminButtons = ({ onApprove }: ButtonsProps) => {
 	return (
 		<div className="table__btns-wrapper">
 			<button type="button" className="table__btn" onClick={() => onApprove()}>

@@ -25,7 +25,6 @@ export const RowTable = ({
 	name,
 	records,
 	id,
-	email,
 	setData,
 	approved,
 	handleUserAction,
