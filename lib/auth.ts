@@ -1,4 +1,3 @@
-import { NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import { connectDB } from "./mongodb";
@@ -10,7 +9,7 @@ const emptyRecords = [
 	{ exercise: "lift", classic: 0, gear: 0 },
 ];
 
-export const authOptions: NextAuthConfig = {
+export const authOptions = {
 	session: {
 		strategy: "jwt",
 	},
