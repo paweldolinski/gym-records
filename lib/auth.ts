@@ -66,7 +66,7 @@ export const authOptions: AuthOptions = {
 				const existingUser = await User.findOne({ email: user.email });
 
 				if (!existingUser) {
-					const newUser = await User.create({
+					await User.create({
 						email: user.email,
 						name: user.name,
 						records: emptyRecords,

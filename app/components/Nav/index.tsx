@@ -3,7 +3,6 @@ import { Button } from "../Button";
 import { useRouter } from "next/navigation";
 import FallbackImg from "../../assets/9dca345c5519d191af167abedf3b76ac.jpg";
 import { ImageWithFallback } from "../Image";
-import Logo from "../../assets/logo.jpg";
 
 interface NavProps {
 	name: string;
