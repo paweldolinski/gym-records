@@ -2,22 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { HeaderTable } from "./HeaderTable";
 import { RowTable } from "./RowTable";
 import { Loader } from "../Loader";
-
-interface Record {
-	exercise: string;
-	classic: string;
-	gear: string;
-	_id: string;
-}
-
-export interface UsersData {
-	email?: string;
-	records: Record[];
-	name: string;
-	_id: string;
-	isAdmin: boolean;
-	approved: boolean;
-}
+import type { UsersData } from "./types";
 
 interface SortingExercise {
 	exercise: "lift" | "squat" | "press";
@@ -126,17 +111,17 @@ export const Table = () => {
 			<div className="table__table-wrapper">
 				<HeaderTable setSortingExerciseAndType={setSortingExerciseAndType} />
 				{(sortedData || data)?.map(
-					({ records, _id, name, email, approved }) => (
+					({ records, _id, name, email, approved, img }) => (
 						<RowTable
 							name={name}
 							email={email}
 							records={records}
 							key={_id}
-							id={_id}
-							isOwner={true}
+							_id={_id}
 							setData={setData}
 							handleUserAction={handleUserAction}
 							approved={approved}
+							img={img}
 						/>
 					),
 				)}

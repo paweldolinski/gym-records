@@ -8,6 +8,7 @@ export interface UserDocument {
 	approved: boolean;
 	createdAt: Date;
 	updatedAt: Date;
+	img: string;
 }
 
 const UserSchema = new Schema<UserDocument>(
@@ -36,6 +37,10 @@ const UserSchema = new Schema<UserDocument>(
 		approved: {
 			type: Boolean,
 			default: false,
+		},
+
+		img: {
+			type: String,
 		},
 	},
 	{

@@ -1,10 +1,10 @@
-interface ButtonsProps {
-	setIsEdit: (value: boolean) => void;
-	isEdit: boolean;
-	onSave: () => void;
-}
+import type { OwnerButtonsProps } from "./types";
 
-export const OwnerButtons = ({ setIsEdit, isEdit, onSave }: ButtonsProps) => {
+export const OwnerButtons = ({
+	setIsEdit,
+	isEdit,
+	onSave,
+}: OwnerButtonsProps) => {
 	return (
 		<div className="table__btns-wrapper">
 			<button

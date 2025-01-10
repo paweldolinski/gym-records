@@ -1,16 +1,22 @@
-const topHeaderNames = ["Zawodnik", "Przysiad", "Wyciskanie", "Martwy ciąg"];
+const topHeaderNames = [
+	"Zawodnik",
+	"Status",
+	"Przysiad",
+	"Wyciskanie",
+	"Martwy ciąg",
+];
 
-const renderTopHeader = topHeaderNames.map((name, index) =>
-	index === 0 ? (
-		<div className="table__cell table__cell--header user" key={name}>
+const renderTopHeader = topHeaderNames.map((name, index) => {
+	const additionalClass = index === 0 ? "user" : index === 1 ? "status" : "";
+	return (
+		<div
+			className={`table__cell table__cell--header ${additionalClass}`}
+			key={name}
+		>
 			{name}
 		</div>
-	) : (
-		<div className="table__cell table__cell--header" key={name}>
-			{name}
-		</div>
-	),
-);
+	);
+});
 
 const headerData = [
 	{ exercise: "squat", types: ["classic", "gear"] },
@@ -31,6 +37,7 @@ export const HeaderTable = ({
 			</div>
 			<div className="table__sub-header-wrapper table__sub-header-wrapper--bottom">
 				<div className="table__cell user" />
+				<div className="table__cell status" />
 
 				{headerData
 					? headerData.map((exercise) =>
