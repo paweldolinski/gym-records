@@ -19,7 +19,7 @@ export const ImageWithFallback = ({
 	const [imgSrc, setImgSrc] = useState<string>(src || fallbackSrc);
 
 	return (
-		<div className="nav__avatar">
+		<div className="img">
 			<Image
 				src={imgSrc}
 				onError={() => setImgSrc(fallbackSrc)}

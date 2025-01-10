@@ -1,43 +1,36 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
-import type { UsersData } from "./index";
+import type { UsersData } from "./types";
 import { OwnerButtons } from "./OwnerButtons";
 import { AdminButtons } from "./AdminButtons";
-interface RecordsProps {
-	exercise: string;
-	classic: string;
-	gear: string;
-}
+import FallbackImg from "../../assets/9dca345c5519d191af167abedf3b76ac.jpg";
+import { ImageWithFallback } from "../Image";
+import type { Record } from "./types";
 
-interface RowTableProps {
-	email?: string;
-	records: RecordsProps[];
-	name: string;
-	id: string;
-	isOwner: boolean;
+interface RowTableProps extends UsersData {
 	setData: Dispatch<SetStateAction<UsersData[] | null>>;
-	approved: boolean;
 	handleUserAction: (id: string, actionType: "approve" | "reject") => void;
 }
 
 export const RowTable = ({
 	name,
 	records,
-	id,
+	_id,
 	setData,
 	approved,
 	handleUserAction,
+	img,
 }: RowTableProps) => {
+	const { data } = useSession();
 	const [isEdit, setIsEdit] = useState(false);
-	const [inputData, setInputData] = useState<RecordsProps[]>([
+	const [inputData, setInputData] = useState<Record[]>([
 		{ exercise: "squat", classic: "", gear: "" },
 		{ exercise: "press", classic: "", gear: "" },
 		{ exercise: "lift", classic: "", gear: "" },
 	]);
 
-	const { data } = useSession();
-	const isOwner = data?.user?.id === id;
+	const isOwner = data?.user?.id === _id;
 	const isAdmin = data?.user?.isAdmin;
 
 	const handleInputChange = (
@@ -62,7 +55,7 @@ export const RowTable = ({
 		try {
 			const response = await fetch("/api/users", {
 				method: "POST",
-				body: JSON.stringify({ id: id, records: inputData }),
+				body: JSON.stringify({ id: _id, records: inputData }),
 			});
 
 			const {
@@ -74,7 +67,7 @@ export const RowTable = ({
 			setData((prev) =>
 				prev
 					? prev?.map((user) =>
-							user._id === id ? { ...user, records: records } : user,
+							user._id === _id ? { ...user, records: records } : user,
 						)
 					: null,
 			);
@@ -95,18 +88,28 @@ export const RowTable = ({
 
 	return (
 		<div className="table__row-wrapper">
-			<div className={`table__badge ${approved ? "approved" : ""}`}>
-				&#10004;
-			</div>
 			<div className={`table__cells-wrapper ${isEdit ? "active" : ""}`}>
 				<div className="table__cell" data-type="user">
-					{name}
+					<ImageWithFallback
+						src={img}
+						fallbackSrc={FallbackImg.src}
+						width={25}
+						height={25}
+						alt="avatar"
+					/>
+					<span className="table__user-name">{name}</span>
 				</div>
+				<div
+					className={`table__status table__cell ${approved ? "approved" : ""}`}
+				>
+					&#10004;
+				</div>
+
 				{inputData.map(({ exercise, classic, gear }) => (
 					<div className="table__cell" key={exercise}>
 						<input
 							className="table__cell--input"
-							placeholder="Classic"
+							placeholder="Klasyk"
 							onChange={(e) => handleInputChange(e, exercise, "classic")}
 							value={classic}
 							disabled={!isEdit}
@@ -115,7 +118,7 @@ export const RowTable = ({
 						/>
 						<input
 							className="table__cell--input"
-							placeholder="Gear"
+							placeholder="Sprzęt"
 							onChange={(e) => handleInputChange(e, exercise, "gear")}
 							value={gear}
 							disabled={!isEdit}
@@ -125,11 +128,16 @@ export const RowTable = ({
 					</div>
 				))}
 			</div>
-			{isOwner ? (
+			{isOwner && !isAdmin ? (
 				<OwnerButtons setIsEdit={setIsEdit} isEdit={isEdit} onSave={onSave} />
 			) : null}
 			{isAdmin ? (
-				<AdminButtons onApprove={() => handleUserAction(id, "approve")} />
+				<AdminButtons
+					onApprove={() => handleUserAction(_id, "approve")}
+					setIsEdit={setIsEdit}
+					isEdit={isEdit}
+					onSave={onSave}
+				/>
 			) : null}
 		</div>
 	);

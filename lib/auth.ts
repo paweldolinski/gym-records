@@ -5,9 +5,9 @@ import User from "../models/User";
 import type { AuthOptions } from "next-auth";
 
 const emptyRecords = [
-	{ exercise: "squat", classic: 0, gear: 0 },
-	{ exercise: "press", classic: 0, gear: 0 },
-	{ exercise: "lift", classic: 0, gear: 0 },
+	{ exercise: "squat", classic: "", gear: "" },
+	{ exercise: "press", classic: "", gear: "" },
+	{ exercise: "lift", classic: "", gear: "" },
 ];
 
 export const authOptions: AuthOptions = {
@@ -66,14 +66,14 @@ export const authOptions: AuthOptions = {
 				const existingUser = await User.findOne({ email: user.email });
 
 				if (!existingUser) {
-					const newUser = await User.create({
+					await User.create({
 						email: user.email,
 						name: user.name,
 						records: emptyRecords,
 						isAdmin: false,
 						approved: false,
+						img: user.image,
 					});
-					console.log(newUser, "-=-=-=-=");
 
 					return true;
 				}
@@ -88,8 +88,6 @@ export const authOptions: AuthOptions = {
 			const { records, _id, isAdmin, approved } = await User.findOne({
 				email: token.email,
 			});
-
-			// console.log("jwt", { trigger: trigger });
 
 			return {
 				...token,

@@ -1,6 +1,6 @@
 .table {     
     margin: 30px auto 0 auto;
-    padding: 0 120px 0 30px;
+    padding: 0 155px 0 0;
     max-width: unset;
     width: 400px;
     overflow-x: scroll;
@@ -22,9 +22,9 @@
     
 
     &__table-wrapper {
-        border: solid black 1px;
+       // border: solid black 1px;
         position: relative;
-        background-color: white;
+        background-color: transparent;
         width: 480px;
         font-size: 10px;
 
@@ -48,9 +48,14 @@
     &__sub-header-wrapper {
         display: flex;
         align-items: center;
+        background-color: white;
 
         &--top {
-            border-bottom: 1px solid black;
+           // border-bottom: 1px solid black;
+        }
+
+        .status {
+            max-width: 40px;
         }
 
     }
@@ -58,7 +63,8 @@
     &__cells-wrapper {
         display: flex;
         align-items: center;
-        border-top: solid 1px black;
+       // border-top: solid 1px black;
+       background-color: white;
 
         &.active {
             border:  solid 3px;
@@ -69,16 +75,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-right: solid black 1px;
+        //border-right: solid black 1px;
         width: 144px;
         min-height: 44px;
         flex: 1;
 
         &--input {
             border: none;
-            border-right: solid black 1px;
+          // border-right: solid black 1px;
             width: 100%;
             height: 44px;
+            text-align: center;
+
             &:nth-child(even) {
                 border: none;
             }
@@ -88,14 +96,20 @@
         &.user {
             min-width: 120px;
             flex: initial;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
 
             @media (min-width: $tabletBreakpoint) {
-                min-width: 300px;
+                min-width: 270px;
             }
 
-            @media screen and (orientation:landscape) {
+            @media screen and (min-aspect-ratio: 16/9) {
                 width: 120px;
               }
+        }
+        &[data-type='user'] {
+            padding-left: 20px;
         }
 
         &--half {
@@ -115,23 +129,26 @@
         }
 
         &:last-child{
-            border-right: none;
+            //border-right: none;
         }
     }
 
     &__row-wrapper {
         position: relative;
+        margin-bottom: 3px;
 
         &:nth-child(odd) {
             background-color: rgba(0,0,0,0.2)
         }
     }
 
-    &__badge {
-        position: absolute;
-        left: -20px;
-        top: 10px;
+    &__user-name {
+        flex: 2;
+    }
+
+    &__status {
         color: orange;
+        max-width: 40px;
 
         &.approved {
             color: #1dff00
@@ -142,10 +159,11 @@
         width: 150px;
         position: absolute;
         right: -161px;
-        top: 10px;
+        top: 0;
+        font-size: 12px;
     }
 
     &__btn {
-        margin-right: 10px;
+        margin-right: 3px;
     }
 }
