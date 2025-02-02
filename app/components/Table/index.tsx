@@ -3,6 +3,7 @@ import { HeaderTable } from "./HeaderTable";
 import { RowTable } from "./RowTable";
 import { Loader } from "../Loader";
 import type { UsersData } from "./types";
+import { handleDeleteAll } from "@/utilities/userActions";
 
 interface SortingExercise {
 	exercise: "lift" | "squat" | "press";

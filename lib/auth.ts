@@ -1,82 +1,66 @@
 import GoogleProvider from "next-auth/providers/google";
-import FacebookProvider from "next-auth/providers/facebook";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { connectDB } from "./mongodb";
 import User from "../models/User";
 import type { AuthOptions } from "next-auth";
-
-const emptyRecords = [
-	{ exercise: "squat", classic: "", gear: "" },
-	{ exercise: "press", classic: "", gear: "" },
-	{ exercise: "lift", classic: "", gear: "" },
-];
+import { createNewUser } from "@/utilities/user";
+import { v4 as uuid4 } from "uuid";
+import VerificationToken from "../models/verificationToken";
+import bcrypt from "bcrypt";
 
 export const authOptions: AuthOptions = {
+	pages: {
+		error: "/error",
+	},
 	session: {
 		strategy: "jwt",
 	},
 	providers: [
-		// CredentialsProvider({
-		// 	name: "Sign in",
-		// 	credentials: {
-		// 		email: {
-		// 			label: "Email",
-		// 			type: "email",
-		// 			placeholder: "example@example.com",
-		// 		},
-		// 	},
-		// 	async authorize(credentials) {
-		// 		await connectDB();
-		// 		const user = await User.findOne({
-		// 			email: credentials?.email,
-		// 		});
+		CredentialsProvider({
+			name: "Login",
+			credentials: {
+				email: {
+					label: "Email",
+					type: "email",
+					placeholder: "example@example.com",
+					required: true,
+				},
+				password: {
+					label: "Hasło",
+					type: "password",
+					placeholder: "password",
+				},
+			},
+			async authorize(credentials) {
+				await connectDB();
+				const user = await User.findOne({
+					email: credentials?.email,
+				}).exec();
 
-		// 		if (!user) {
-		// 			console.log("no user");
-		// 			const user = await User.create({
-		// 				email: credentials?.email,
-		// 				records: emptyRecords,
-		// 			});
+				if (!user) {
+					throw new Error("user_not_found");
+				}
 
-		// 			return user;
-		// 		}
+				const match = await bcrypt.compare(
+					credentials?.password,
+					user.password,
+				);
 
-		// 		console.log(user, "user");
+				console.log(await match, "match", credentials?.password, user.password);
 
-		// 		// const passwordMatch = await bcrypt.compare(
-		// 		// 	credentials!.password,
-		// 		// 	user.password,
-		// 		// );
-		// 		// if (!passwordMatch) throw new Error("Wrong Password");
-		// 		return user;
-		// 	},
-		// }),
+				if (match) return user;
+			},
+		}),
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID as string,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
 		}),
-		FacebookProvider({
-			clientId: process.env.FACEBOOK_CLIENT_ID as string,
-			clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
-		}),
 	],
 	callbacks: {
-		signIn: async ({ user }) => {
+		signIn: async ({ user: { email, name, image } }) => {
+			console.log(1);
 			try {
-				await connectDB();
-				const existingUser = await User.findOne({ email: user.email });
-
-				if (!existingUser) {
-					await User.create({
-						email: user.email,
-						name: user.name,
-						records: emptyRecords,
-						isAdmin: false,
-						approved: false,
-						img: user.image,
-					});
-
-					return true;
-				}
+				await createNewUser({ email, name, image });
 
 				return true;
 			} catch (err) {
@@ -85,9 +69,20 @@ export const authOptions: AuthOptions = {
 			}
 		},
 		jwt: async ({ token }) => {
-			const { records, _id, isAdmin, approved } = await User.findOne({
+			console.log(2);
+			const user = await User.findOne({
 				email: token.email,
 			});
+			console.log(user, "123123");
+			const {
+				records = [],
+				_id,
+				isAdmin,
+				approved,
+			} = await User.findOne({
+				email: token.email,
+			});
+			console.log(records, "records jwt");
 
 			return {
 				...token,
@@ -98,7 +93,9 @@ export const authOptions: AuthOptions = {
 			};
 		},
 		session: async ({ session, token }) => {
+			console.log(3);
 			const { records, id, isAdmin, approved } = token;
+			console.log(records, "records token");
 			return {
 				...session,
 				user: {
@@ -111,4 +108,37 @@ export const authOptions: AuthOptions = {
 			};
 		},
 	},
+};
+
+const getVerificationTokenByEmail = async (email: string) => {
+	try {
+		const veryficationToken = await VerificationToken.find({ email: email });
+		console.log(veryficationToken);
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+export const generateVerificationToken = async (email: string) => {
+	const token = uuid4();
+	const expires = new Date().getTime() + 1000 * 60 * 60 * 1;
+
+	const existingToken = await getVerificationTokenByEmail(email);
+
+	console.log(existingToken, "existimgtoken");
+
+	if (existingToken) {
+		await VerificationToken.findOneAndUpdate(
+			{ _id: existingToken.id },
+			{ $unset: { token: "" } },
+		);
+	}
+
+	const veryficationToken = await VerificationToken.create({
+		email,
+		token,
+		expires: new Date(expires),
+	});
+
+	return veryficationToken;
 };

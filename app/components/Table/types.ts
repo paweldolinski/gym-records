@@ -22,4 +22,5 @@ export interface OwnerButtonsProps {
 
 export interface AdminButtonsProps extends OwnerButtonsProps {
 	onApprove: () => void;
+	onDelete: () => void;
 }

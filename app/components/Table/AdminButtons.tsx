@@ -1,6 +1,7 @@
 import type { AdminButtonsProps } from "./types";
 
 export const AdminButtons = ({
+	onDelete,
 	onApprove,
 	setIsEdit,
 	isEdit,
@@ -10,6 +11,9 @@ export const AdminButtons = ({
 		<div className="table__btns-wrapper">
 			<button type="button" className="table__btn" onClick={() => onApprove()}>
 				Zatwierdz
+			</button>
+			<button type="button" className="table__btn" onClick={() => onDelete()}>
+				Usuń
 			</button>
 			<button
 				onClick={() => setIsEdit(!isEdit)}
