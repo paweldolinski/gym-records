@@ -1,5 +1,6 @@
-"use client"; // W przypadku App Router
+"use client";
 
+import Card from "@/components/Card";
 import { Nav } from "@/components/Nav";
 import { useState } from "react";
 
@@ -10,9 +11,9 @@ export default function RegisterPage() {
 		password: "",
 		confirmPassword: "",
 	});
-
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -29,6 +30,7 @@ export default function RegisterPage() {
 			setError("Hasła nie są takie same.");
 			return;
 		}
+		setIsLoading(true);
 
 		try {
 			const response = await fetch("/api/users", {
@@ -45,7 +47,6 @@ export default function RegisterPage() {
 			});
 
 			if (response.ok) {
-				setSuccess(true);
 				setError(null);
 				setFormData({
 					name: "",
@@ -53,60 +54,74 @@ export default function RegisterPage() {
 					password: "",
 					confirmPassword: "",
 				});
+				setIsLoading(false);
+				setSuccess(true);
 			} else {
 				const data = await response.json();
 				setError(data.message || "Wystąpił błąd podczas rejestracji.");
+				setIsLoading(false);
 			}
 		} catch (err) {
 			setError("Nie udało się nawiązać połączenia z serwerem.");
+			setIsLoading(false);
 		}
 	};
 
 	return (
 		<div className="register">
 			<Nav />
-			<h1>Rejestracja</h1>
-			{error && <p>{error}</p>}
-			{success && <p>Rejestracja zakończona sukcesem!</p>}
-			<form onSubmit={handleSubmit}>
-				<input
-					placeholder="Imię"
-					type="text"
-					id="name"
-					name="name"
-					value={formData.name}
-					onChange={handleChange}
-					required
-				/>
+			<Card>
+				<h1>Rejestracja</h1>
+				{error && <p>{error}</p>}
+				{success && (
+					<p>
+						Rejestracja zakończona sukcesem! <br /> Sprawdź maila w celu
+						weryfikacji konta
+					</p>
+				)}
+				{isLoading && <p>loading</p>}
+				<form onSubmit={handleSubmit}>
+					<input
+						placeholder="Imię"
+						type="text"
+						id="name"
+						name="name"
+						value={formData.name}
+						onChange={handleChange}
+						required
+					/>
 
-				<input
-					type="email"
-					id="email"
-					name="email"
-					value={formData.email}
-					onChange={handleChange}
-					required
-				/>
+					<input
+						type="email"
+						id="email"
+						name="email"
+						value={formData.email}
+						onChange={handleChange}
+						required
+					/>
 
-				<input
-					type="password"
-					id="password"
-					name="password"
-					value={formData.password}
-					onChange={handleChange}
-					required
-				/>
+					<input
+						type="password"
+						id="password"
+						name="password"
+						value={formData.password}
+						onChange={handleChange}
+						required
+					/>
 
-				<input
-					type="password"
-					id="confirmPassword"
-					name="confirmPassword"
-					value={formData.confirmPassword}
-					onChange={handleChange}
-					required
-				/>
-				<button type="submit">Zarejestruj się</button>
-			</form>
+					<input
+						type="password"
+						id="confirmPassword"
+						name="confirmPassword"
+						value={formData.confirmPassword}
+						onChange={handleChange}
+						required
+					/>
+					<button type="submit" disabled={isLoading}>
+						{isLoading ? "Rejestracja..." : "Zarejestruj się"}
+					</button>
+				</form>
+			</Card>
 		</div>
 	);
 }

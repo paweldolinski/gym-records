@@ -1,8 +1,9 @@
+import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 import { connectDB } from "../../lib/mongodb";
 import User from "../../models/User";
-import { generateVerificationToken } from "../../lib/auth";
-import bcrypt from "bcrypt";
+import { generateVerificationToken } from "./token";
+import { sendVerificationEmail } from "../../lib/mail";
 
 const emptyRecords = [
 	{ exercise: "squat", classic: "", gear: "" },
@@ -15,21 +16,57 @@ interface CreateNewUserProps {
 	password?: string;
 	name: string | null | undefined;
 	image?: string | null;
+	provider?: string;
 }
 
-export const findUser = async (email: string) =>
-	await User.findOne({ email: email });
+export const verifyEmail = async (id: string) => {
+	const updatedUser = await User.findOneAndUpdate(
+		{ _id: id },
+		{
+			$set: {
+				isEmailVerified: true,
+				emailVerifiedDate: new Date(),
+				verificationExpiresAt: null,
+			},
+		},
+		{ returnNewDocument: true, returnDocument: "after" },
+	);
+
+	if (updatedUser) {
+		return NextResponse.json(
+			{ message: "Updating account successfully", user: updatedUser.email },
+			{ status: 201 },
+		);
+	}
+
+	return NextResponse.json(
+		{ message: "Failed to update account" },
+		{ status: 404 },
+	);
+};
+
+export const findUser = async (email: string) => {
+	try {
+		const user = await User.findOne({ email: email });
+
+		return user;
+	} catch (error) {
+		console.log(error);
+		return null;
+	}
+};
 
 export const createNewUser = async ({
 	email,
 	password,
 	name,
 	image = "",
+	provider,
 }: CreateNewUserProps) => {
 	try {
 		await connectDB();
 		const existingUser = await User.findOne({ email: email });
-		const hashedPassword = await bcrypt.hash(password, 10);
+		const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
 		if (!existingUser) {
 			await User.create({
@@ -40,12 +77,18 @@ export const createNewUser = async ({
 				approved: false,
 				img: image,
 				password: hashedPassword,
-				test: password,
+				isEmailVerified: provider === "google",
+				...(provider !== "google" && {
+					verificationExpiresAt: new Date(Date.now() + 2 * 60 * 1000), // 1h od teraz
+				}),
 			});
-			await generateVerificationToken(email);
+
+			const verificationToken = await generateVerificationToken(email);
+
+			await sendVerificationEmail(email, verificationToken.token);
 
 			return NextResponse.json(
-				{ message: "Account registered succesfully" },
+				{ message: "Email Verification was sent" },
 				{ status: 201 },
 			);
 		}

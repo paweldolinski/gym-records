@@ -1,16 +1,15 @@
-import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { connectDB } from "./mongodb";
-import User from "../models/User";
-import type { AuthOptions } from "next-auth";
 import { createNewUser } from "@/utilities/user";
-import { v4 as uuid4 } from "uuid";
-import VerificationToken from "../models/verificationToken";
 import bcrypt from "bcrypt";
+import type { AuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import User from "../models/User";
+import { connectDB } from "./mongodb";
 
 export const authOptions: AuthOptions = {
 	pages: {
 		error: "/error",
+		signIn: "/login",
 	},
 	session: {
 		strategy: "jwt",
@@ -32,10 +31,13 @@ export const authOptions: AuthOptions = {
 				},
 			},
 			async authorize(credentials) {
+				console.log("authorize");
 				await connectDB();
 				const user = await User.findOne({
 					email: credentials?.email,
 				}).exec();
+
+				console.log(user, "user=========");
 
 				if (!user) {
 					throw new Error("user_not_found");
@@ -46,9 +48,11 @@ export const authOptions: AuthOptions = {
 					user.password,
 				);
 
-				console.log(await match, "match", credentials?.password, user.password);
+				if (!match) throw new Error("wrong_password");
 
-				if (match) return user;
+				if (!user.isEmailVerified) throw new Error("user_not_verified");
+
+				return user;
 			},
 		}),
 		GoogleProvider({
@@ -57,10 +61,11 @@ export const authOptions: AuthOptions = {
 		}),
 	],
 	callbacks: {
-		signIn: async ({ user: { email, name, image } }) => {
-			console.log(1);
+		signIn: async ({ user: { email, name, image }, account: { provider } }) => {
 			try {
-				await createNewUser({ email, name, image });
+				await createNewUser({ email, name, image, provider });
+
+				console.log("callbacks", provider);
 
 				return true;
 			} catch (err) {
@@ -69,11 +74,8 @@ export const authOptions: AuthOptions = {
 			}
 		},
 		jwt: async ({ token }) => {
-			console.log(2);
-			const user = await User.findOne({
-				email: token.email,
-			});
-			console.log(user, "123123");
+			console.log("jwt");
+
 			const {
 				records = [],
 				_id,
@@ -82,7 +84,6 @@ export const authOptions: AuthOptions = {
 			} = await User.findOne({
 				email: token.email,
 			});
-			console.log(records, "records jwt");
 
 			return {
 				...token,
@@ -93,9 +94,8 @@ export const authOptions: AuthOptions = {
 			};
 		},
 		session: async ({ session, token }) => {
-			console.log(3);
 			const { records, id, isAdmin, approved } = token;
-			console.log(records, "records token");
+
 			return {
 				...session,
 				user: {
@@ -108,37 +108,4 @@ export const authOptions: AuthOptions = {
 			};
 		},
 	},
-};
-
-const getVerificationTokenByEmail = async (email: string) => {
-	try {
-		const veryficationToken = await VerificationToken.find({ email: email });
-		console.log(veryficationToken);
-	} catch (error) {
-		console.log(error);
-	}
-};
-
-export const generateVerificationToken = async (email: string) => {
-	const token = uuid4();
-	const expires = new Date().getTime() + 1000 * 60 * 60 * 1;
-
-	const existingToken = await getVerificationTokenByEmail(email);
-
-	console.log(existingToken, "existimgtoken");
-
-	if (existingToken) {
-		await VerificationToken.findOneAndUpdate(
-			{ _id: existingToken.id },
-			{ $unset: { token: "" } },
-		);
-	}
-
-	const veryficationToken = await VerificationToken.create({
-		email,
-		token,
-		expires: new Date(expires),
-	});
-
-	return veryficationToken;
 };

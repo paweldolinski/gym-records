@@ -4,7 +4,7 @@ export interface VerificationTokenDocument {
 	email: string;
 	id: string;
 	token: string;
-	expires: Date;
+	verificationExpiresAt: Date;
 }
 
 const VerificationTokenSchema = new Schema<VerificationTokenDocument>(
@@ -20,13 +20,18 @@ const VerificationTokenSchema = new Schema<VerificationTokenDocument>(
 			type: String,
 		},
 
-		expires: {
+		verificationExpiresAt: {
 			type: Date,
 		},
 	},
 	{
 		timestamps: true,
 	},
+);
+
+VerificationTokenSchema.index(
+	{ verificationExpiresAt: 1 },
+	{ expireAfterSeconds: 0 },
 );
 
 const VerificationToken =

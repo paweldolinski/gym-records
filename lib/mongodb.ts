@@ -7,6 +7,7 @@ export const connectDB = async () => {
 
 		if (connection.readyState === 1) {
 			console.log("=========connected to the mongodb 🚀");
+
 			return Promise.resolve(true);
 		}
 	} catch (error) {

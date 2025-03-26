@@ -1,13 +1,12 @@
-import { createNewUser } from "@/utilities/user";
-import { connectDB } from "../../../lib/mongodb";
-import User, { type UserDocument } from "../../../models/User";
-import { NextResponse } from "next/server";
 import {
 	handleApproval,
 	handleDelete,
 	handleRegister,
 	handleUpdate,
 } from "@/utilities/userActions";
+import { NextResponse } from "next/server";
+import { connectDB } from "../../../lib/mongodb";
+import User, { type UserDocument } from "../../../models/User";
 
 export interface UpdateRequestBody {
 	id: string;
@@ -21,7 +20,6 @@ export interface UpdateRequestBody {
 export async function POST(req: Request) {
 	try {
 		const body: UpdateRequestBody = await req.json();
-		console.log(body, "===========");
 		const { id, records, type } = body;
 
 		await connectDB();
@@ -89,6 +87,7 @@ export async function DELETE(req: Request) {
 		await connectDB();
 		if (!id)
 			return NextResponse.json({ message: "ID is required" }, { status: 400 });
+		// return await handleDeleteAll();
 
 		return await handleDelete(id);
 	} catch (error) {

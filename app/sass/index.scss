@@ -3,7 +3,7 @@
 @import "./fonts.scss";
 @import "./breakpoints.scss";
 
-
+@import "../components/Card/card";
 @import "../components/Nav/styles";
 @import "../components/Image/image";
 @import "../components/Loader/styles";
@@ -12,4 +12,5 @@
 
 @import "../error/error";
 @import "../register/register";
-@import "../login/login"
+@import "../login/login";
+@import "../verify-email/varify-email"

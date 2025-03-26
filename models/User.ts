@@ -1,5 +1,4 @@
-import mongoose, { Callback, Schema, model } from "mongoose";
-import bcrypt from "bcrypt";
+import mongoose, { Date, Schema, model } from "mongoose";
 
 export interface UserDocument {
 	email: string;
@@ -11,7 +10,9 @@ export interface UserDocument {
 	createdAt: Date;
 	updatedAt: Date;
 	img: string;
-	test: string;
+	isEmailVerified: boolean;
+	emailVerifiedDate?: Date;
+	verificationExpiresAt: Date;
 }
 
 const UserSchema = new Schema<UserDocument>(
@@ -48,8 +49,17 @@ const UserSchema = new Schema<UserDocument>(
 		img: {
 			type: String,
 		},
-		test: {
-			type: String,
+
+		isEmailVerified: {
+			type: Boolean,
+		},
+
+		emailVerifiedDate: {
+			type: Date,
+		},
+
+		verificationExpiresAt: {
+			type: Date,
 		},
 	},
 	{
@@ -57,27 +67,7 @@ const UserSchema = new Schema<UserDocument>(
 	},
 );
 
-// UserSchema.pre("save", function (next) {
-// 	const user = this;
-// 	if (this.isModified("password") || this.isNew) {
-// 		bcrypt.genSalt(10, function (saltError, salt) {
-// 			if (saltError) {
-// 				return next(saltError);
-// 			} else {
-// 				bcrypt.hash(user.password, salt, function (hashError, hash) {
-// 					if (hashError) {
-// 						return next(hashError);
-// 					}
-
-// 					user.password = hash;
-// 					next();
-// 				});
-// 			}
-// 		});
-// 	} else {
-// 		return next();
-// 	}
-// });
+UserSchema.index({ verificationExpiresAt: 1 }, { expireAfterSeconds: 0 });
 
 const User = mongoose.models?.User || model<UserDocument>("User", UserSchema);
 export default User;

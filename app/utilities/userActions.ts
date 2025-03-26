@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
-import User, { type UserDocument } from "../../models/User";
-import { createNewUser } from "./user";
 import type { UpdateRequestBody } from "@/api/users/route";
-import { generateVerificationToken } from "../../lib/auth";
+import { NextResponse } from "next/server";
+import User from "../../models/User";
+import { createNewUser } from "./user";
 
 export const handleRegister = async (body: UpdateRequestBody) => {
 	const { name, email, password } = body;

@@ -5,12 +5,13 @@ import { useSearchParams } from "next/navigation";
 const errorMessages: Record<string, string> = {
 	user_not_found: "Użytkownik o podanym adresie email nie istnieje.",
 	wrong_password: "Podano nieprawidłowe hasło.",
+	user_not_verified: "Sprawdź skrzynkę email w celu weryfikacji konta",
 	default: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
 };
 
 export default function ErrorPage() {
 	const searchParams = useSearchParams();
-	const error = searchParams.get("error"); // Pobranie parametru "error" z URL
+	const error = searchParams.get("error");
 
 	console.log(error);
 

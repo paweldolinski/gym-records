@@ -1,5 +1,9 @@
 .input {
+    &__wrapper {
+        text-align: left;
+    }
+    
     &__label {
-        color: white
+        color: white;
     }
 }
