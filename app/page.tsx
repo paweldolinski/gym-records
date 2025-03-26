@@ -6,7 +6,7 @@ import { Table } from "./components/Table";
 export default function SignIn() {
 	const { data } = useSession();
 
-	const name = data?.user?.email ?? "";
+	const name = data?.user?.name ?? "";
 	const img = data?.user?.image ?? "";
 
 	return (
