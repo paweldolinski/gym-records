@@ -50,23 +50,31 @@ const LoginPage = () => {
 				<div className="login">
 					<div className="login__form-wrapper">
 						{error ? <p>{error}</p> : null}
-						<Input name="email" onChange={handleInputChange} label="Email" />
+						<Input
+							type="text"
+							name="email"
+							onChange={handleInputChange}
+							label="Email"
+						/>
 						<Input
 							name="password"
 							onChange={handleInputChange}
 							label="Password"
 							type="password"
 						/>
-						<button onClick={handleCredetnialsLogin}>Zaloguj się</button>
+						<button type="button" onClick={handleCredetnialsLogin}>
+							Zaloguj się
+						</button>
 						<p>
 							Nie masz jeszcze konta?{" "}
 							<Link href="/register">Zarejestruj się</Link>
 						</p>
 						<div className="login__separator">Albo</div>
 						<button
+							type="button"
 							className="btn-google"
 							onClick={handleGoogleLogin}
-							disabled={error ? true : false}
+							disabled={!!error}
 						>
 							Zaloguj się z Google
 						</button>

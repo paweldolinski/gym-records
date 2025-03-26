@@ -83,9 +83,10 @@ export const createNewUser = async ({
 				}),
 			});
 
-			const verificationToken = await generateVerificationToken(email);
-
-			await sendVerificationEmail(email, verificationToken.token);
+			if (provider !== "google") {
+				const verificationToken = await generateVerificationToken(email);
+				await sendVerificationEmail(email, verificationToken.token);
+			}
 
 			return NextResponse.json(
 				{ message: "Email Verification was sent" },
