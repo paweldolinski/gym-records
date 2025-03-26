@@ -79,7 +79,7 @@ export const RowTable = ({
 				body: JSON.stringify({ id: id, type: "delete" }),
 			});
 
-			const { message, status } = await response.json();
+			const { status } = await response.json();
 			if (status === 200) {
 				setData((prev) => (prev ? prev.filter((user) => user._id !== id) : []));
 			}

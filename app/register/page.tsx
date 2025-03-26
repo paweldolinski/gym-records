@@ -64,6 +64,7 @@ export default function RegisterPage() {
 		} catch (err) {
 			setError("Nie udało się nawiązać połączenia z serwerem.");
 			setIsLoading(false);
+			console.log(err);
 		}
 	};
 

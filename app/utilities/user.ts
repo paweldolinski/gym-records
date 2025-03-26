@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
+import { sendVerificationEmail } from "../../lib/mail";
 import { connectDB } from "../../lib/mongodb";
 import User from "../../models/User";
 import { generateVerificationToken } from "./token";
-import { sendVerificationEmail } from "../../lib/mail";
 
 const emptyRecords = [
 	{ exercise: "squat", classic: "", gear: "" },

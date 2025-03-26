@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 const errorMessages: Record<string, string> = {
@@ -21,7 +22,7 @@ export default function ErrorPage() {
 		<div className="error">
 			<h1>Błąd logowania</h1>
 			<p>{errorMessage}</p>
-			<a href="/api/auth/signin">Powrót do logowania</a>
+			<Link href="/api/auth/signin">Powrót do logowania</Link>
 		</div>
 	);
 }

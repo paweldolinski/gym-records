@@ -1,5 +1,5 @@
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import FallbackImg from "../../assets/9dca345c5519d191af167abedf3b76ac.jpg";
 import { Button } from "../Button";
 import { ImageWithFallback } from "../Image";
@@ -11,12 +11,15 @@ interface NavProps {
 
 export const Nav: React.FC<NavProps> = ({ name, img }) => {
 	const { push } = useRouter();
+	const pathname = usePathname();
 
-	console.log(name);
 	return (
 		<div className="nav">
 			<div className="nav__wrapper container">
-				<Button label="Tabela" onClick={() => push("/")} />
+				{pathname === "/" ? null : (
+					<Button label="Tabela" onClick={() => push("/")} />
+				)}
+
 				{name === "" || name === undefined ? (
 					<div className="nav__guest-wrapper">
 						<Button label="Login" onClick={() => push("/api/auth/signin")} />
