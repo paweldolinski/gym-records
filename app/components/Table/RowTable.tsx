@@ -1,12 +1,11 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
-import type { UsersData } from "./types";
-import { OwnerButtons } from "./OwnerButtons";
-import { AdminButtons } from "./AdminButtons";
 import FallbackImg from "../../assets/9dca345c5519d191af167abedf3b76ac.jpg";
 import { ImageWithFallback } from "../Image";
-import type { Record } from "./types";
+import { AdminButtons } from "./AdminButtons";
+import { OwnerButtons } from "./OwnerButtons";
+import type { Record, UsersData } from "./types";
 
 interface RowTableProps extends UsersData {
 	setData: Dispatch<SetStateAction<UsersData[] | null>>;
@@ -32,6 +31,7 @@ export const RowTable = ({
 
 	const isOwner = data?.user?.id === _id;
 	const isAdmin = data?.user?.isAdmin;
+	// const isAdmin = true;
 
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -50,19 +50,15 @@ export const RowTable = ({
 	const onSave = async () => {
 		setIsEdit(false);
 
-		console.log("onSave");
-
 		try {
 			const response = await fetch("/api/users", {
 				method: "POST",
-				body: JSON.stringify({ id: _id, records: inputData }),
+				body: JSON.stringify({ id: _id, records: inputData, type: "update" }),
 			});
 
 			const {
 				user: { records },
-				message,
 			} = await response.json();
-			console.log(message);
 
 			setData((prev) =>
 				prev
@@ -73,6 +69,22 @@ export const RowTable = ({
 			);
 		} catch (e) {
 			console.log(e);
+		}
+	};
+
+	const onDelete = async (id: string) => {
+		try {
+			const response = await fetch("/api/users", {
+				method: "DELETE",
+				body: JSON.stringify({ id: id, type: "delete" }),
+			});
+
+			const { message, status } = await response.json();
+			if (status === 200) {
+				setData((prev) => (prev ? prev.filter((user) => user._id !== id) : []));
+			}
+		} catch (error) {
+			console.log(error);
 		}
 	};
 
@@ -137,6 +149,7 @@ export const RowTable = ({
 					setIsEdit={setIsEdit}
 					isEdit={isEdit}
 					onSave={onSave}
+					onDelete={() => onDelete(_id)}
 				/>
 			) : null}
 		</div>

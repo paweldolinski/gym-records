@@ -1,11 +1,71 @@
+import {
+	handleApproval,
+	handleDelete,
+	handleRegister,
+	handleUpdate,
+} from "@/utilities/userActions";
+import { NextResponse } from "next/server";
 import { connectDB } from "../../../lib/mongodb";
 import User, { type UserDocument } from "../../../models/User";
-import { NextResponse } from "next/server";
 
-interface UpdateRequestBody {
+export interface UpdateRequestBody {
 	id: string;
+	name: string;
+	password: string;
+	email: string;
 	records?: [];
-	type?: "approve" | "reject";
+	type?: "approve" | "reject" | "update" | "register" | "delete";
+}
+
+export async function POST(req: Request) {
+	try {
+		const body: UpdateRequestBody = await req.json();
+		const { id, records, type } = body;
+
+		await connectDB();
+
+		switch (type) {
+			case "register":
+				return await handleRegister(body);
+
+			case "update":
+				if (!id || !records) {
+					return NextResponse.json(
+						{ message: "Missing ID or records for update" },
+						{ status: 400 },
+					);
+				}
+				return await handleUpdate(id, records);
+
+			case "approve":
+				if (!id)
+					return NextResponse.json(
+						{ message: "ID is required" },
+						{ status: 400 },
+					);
+				return await handleApproval(id, true);
+
+			case "reject":
+				if (!id)
+					return NextResponse.json(
+						{ message: "ID is required" },
+						{ status: 400 },
+					);
+				return await handleApproval(id, false);
+
+			default:
+				return NextResponse.json(
+					{ message: "Invalid action type" },
+					{ status: 400 },
+				);
+		}
+	} catch (error) {
+		console.error(error);
+		return NextResponse.json(
+			{ message: "Something went wrong", error },
+			{ status: 500 },
+		);
+	}
 }
 
 export async function GET() {
@@ -20,66 +80,19 @@ export async function GET() {
 	}
 }
 
-export async function POST(req: Request) {
+export async function DELETE(req: Request) {
+	const body: UpdateRequestBody = await req.json();
+	const { id } = body;
 	try {
-		const body: UpdateRequestBody = await req.json();
-		const { id, records, type } = body;
-
-		if (!id) {
-			return NextResponse.json({ message: "ID is required" }, { status: 400 });
-		}
-
 		await connectDB();
+		if (!id)
+			return NextResponse.json({ message: "ID is required" }, { status: 400 });
+		// return await handleDeleteAll();
 
-		if (records) {
-			const updateAndReturn = await User.findOneAndUpdate(
-				{ _id: id },
-				{ $set: { records: records } },
-				{ returnNewDocument: true, returnDocument: "after" },
-			);
-			if (updateAndReturn) {
-				return NextResponse.json(
-					{ message: "Updating account successfully", user: updateAndReturn },
-					{ status: 201 },
-				);
-			}
-		}
-
-		if (type === "approve") {
-			const approveRecords = await User.findOneAndUpdate(
-				{ _id: id },
-				{ $set: { approved: true } },
-				{ returnNewDocument: true, returnDocument: "after" },
-			);
-			if (approveRecords) {
-				return NextResponse.json(
-					{ message: "Account approved successfully" },
-					{ status: 201 },
-				);
-			}
-		}
-
-		if (type === "reject") {
-			const approveRecords = await User.findOneAndUpdate(
-				{ _id: id },
-				{ $set: { approved: false } },
-				{ returnNewDocument: true, returnDocument: "after" },
-			);
-			if (approveRecords) {
-				return NextResponse.json(
-					{ message: "Account approved successfully" },
-					{ status: 201 },
-				);
-			}
-		}
-
-		return NextResponse.json(
-			{ message: "Updating account unsuccessfully" },
-			{ status: 404 },
-		);
+		return await handleDelete(id);
 	} catch (error) {
 		return NextResponse.json(
-			{ message: "Something went wrong...", error },
+			{ message: "Something went wrong with delete user", error },
 			{ status: 500 },
 		);
 	}

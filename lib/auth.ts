@@ -1,82 +1,71 @@
-import GoogleProvider from "next-auth/providers/google";
-import FacebookProvider from "next-auth/providers/facebook";
-import { connectDB } from "./mongodb";
-import User from "../models/User";
+import { createNewUser } from "@/utilities/user";
+import bcrypt from "bcrypt";
 import type { AuthOptions } from "next-auth";
-
-const emptyRecords = [
-	{ exercise: "squat", classic: "", gear: "" },
-	{ exercise: "press", classic: "", gear: "" },
-	{ exercise: "lift", classic: "", gear: "" },
-];
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import User from "../models/User";
+import { connectDB } from "./mongodb";
 
 export const authOptions: AuthOptions = {
+	pages: {
+		error: "/error",
+		signIn: "/login",
+	},
 	session: {
 		strategy: "jwt",
 	},
 	providers: [
-		// CredentialsProvider({
-		// 	name: "Sign in",
-		// 	credentials: {
-		// 		email: {
-		// 			label: "Email",
-		// 			type: "email",
-		// 			placeholder: "example@example.com",
-		// 		},
-		// 	},
-		// 	async authorize(credentials) {
-		// 		await connectDB();
-		// 		const user = await User.findOne({
-		// 			email: credentials?.email,
-		// 		});
+		CredentialsProvider({
+			name: "Login",
+			credentials: {
+				email: {
+					label: "Email",
+					type: "email",
+					placeholder: "example@example.com",
+					required: true,
+				},
+				password: {
+					label: "Hasło",
+					type: "password",
+					placeholder: "password",
+				},
+			},
+			async authorize(credentials) {
+				console.log("authorize");
+				await connectDB();
+				const user = await User.findOne({
+					email: credentials?.email,
+				}).exec();
 
-		// 		if (!user) {
-		// 			console.log("no user");
-		// 			const user = await User.create({
-		// 				email: credentials?.email,
-		// 				records: emptyRecords,
-		// 			});
+				console.log(user, "user=========");
 
-		// 			return user;
-		// 		}
+				if (!user) {
+					throw new Error("user_not_found");
+				}
 
-		// 		console.log(user, "user");
+				const match = await bcrypt.compare(
+					credentials?.password,
+					user.password,
+				);
 
-		// 		// const passwordMatch = await bcrypt.compare(
-		// 		// 	credentials!.password,
-		// 		// 	user.password,
-		// 		// );
-		// 		// if (!passwordMatch) throw new Error("Wrong Password");
-		// 		return user;
-		// 	},
-		// }),
+				if (!match) throw new Error("wrong_password");
+
+				if (!user.isEmailVerified) throw new Error("user_not_verified");
+
+				return user;
+			},
+		}),
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID as string,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
 		}),
-		FacebookProvider({
-			clientId: process.env.FACEBOOK_CLIENT_ID as string,
-			clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
-		}),
 	],
 	callbacks: {
-		signIn: async ({ user }) => {
+		signIn: async ({ user: { email, name, image }, account: { provider } }) => {
 			try {
-				await connectDB();
-				const existingUser = await User.findOne({ email: user.email });
+				await createNewUser({ email, name, image, provider });
 
-				if (!existingUser) {
-					await User.create({
-						email: user.email,
-						name: user.name,
-						records: emptyRecords,
-						isAdmin: false,
-						approved: false,
-						img: user.image,
-					});
-
-					return true;
-				}
+				console.log("callbacks", provider);
 
 				return true;
 			} catch (err) {
@@ -85,7 +74,14 @@ export const authOptions: AuthOptions = {
 			}
 		},
 		jwt: async ({ token }) => {
-			const { records, _id, isAdmin, approved } = await User.findOne({
+			console.log("jwt");
+
+			const {
+				records = [],
+				_id,
+				isAdmin,
+				approved,
+			} = await User.findOne({
 				email: token.email,
 			});
 
@@ -99,6 +95,7 @@ export const authOptions: AuthOptions = {
 		},
 		session: async ({ session, token }) => {
 			const { records, id, isAdmin, approved } = token;
+
 			return {
 				...session,
 				user: {

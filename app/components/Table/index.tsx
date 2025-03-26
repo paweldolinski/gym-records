@@ -1,7 +1,8 @@
+import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
+import { Loader } from "../Loader";
 import { HeaderTable } from "./HeaderTable";
 import { RowTable } from "./RowTable";
-import { Loader } from "../Loader";
 import type { UsersData } from "./types";
 
 interface SortingExercise {
@@ -38,6 +39,8 @@ export const Table = () => {
 		type: "classic",
 	});
 	const [isLoading, setLoading] = useState(true);
+	const { status } = useSession();
+	const isGuest = status === "unauthenticated";
 
 	const sortingData = useCallback(() => {
 		if (!data) return;
@@ -107,7 +110,7 @@ export const Table = () => {
 	return isLoading ? (
 		<Loader />
 	) : (
-		<div className="table container">
+		<div className={`table container ${isGuest ? "center" : null}`}>
 			<div className="table__table-wrapper">
 				<HeaderTable setSortingExerciseAndType={setSortingExerciseAndType} />
 				{(sortedData || data)?.map(
