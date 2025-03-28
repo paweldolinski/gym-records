@@ -1,6 +1,6 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose, { type Document, Schema, model } from "mongoose";
 
-export interface VerificationTokenDocument {
+export interface VerificationTokenDocument extends Document {
 	email: string;
 	id: string;
 	token: string;
@@ -11,17 +11,20 @@ const VerificationTokenSchema = new Schema<VerificationTokenDocument>(
 	{
 		email: {
 			type: String,
-			unique: true,
+			required: true,
 		},
 		id: {
 			type: String,
+			required: true,
 		},
 		token: {
 			type: String,
+			required: true,
 		},
 
 		verificationExpiresAt: {
 			type: Date,
+			required: true,
 		},
 	},
 	{

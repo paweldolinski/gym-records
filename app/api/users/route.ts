@@ -4,6 +4,7 @@ import {
 	handleRegister,
 	handleUpdate,
 } from "@/utilities/userActions";
+import type { Document } from "mongoose";
 import { NextResponse } from "next/server";
 import { connectDB } from "../../../lib/mongodb";
 import User, { type UserDocument } from "../../../models/User";
@@ -72,7 +73,7 @@ export async function GET() {
 	try {
 		await connectDB();
 
-		const users: UserDocument[] = await User.find();
+		const users = await User.find().lean<Document<UserDocument>[]>();
 
 		return NextResponse.json(users, { status: 200 });
 	} catch (err) {

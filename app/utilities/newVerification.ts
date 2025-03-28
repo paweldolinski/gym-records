@@ -1,5 +1,4 @@
 "use server";
-
 import { deleteVerificationToken, getVerificationTokenByToken } from "./token";
 import { findUser, verifyEmail } from "./user";
 
@@ -10,7 +9,7 @@ export const newVerification = async (token: string) => {
 		return { error: "Invalid token" };
 	}
 
-	const hasExpired = new Date(existingToken.expires) < new Date();
+	const hasExpired = new Date(existingToken[0].expires) < new Date();
 
 	if (hasExpired) {
 		return { error: "Token has expired" };
