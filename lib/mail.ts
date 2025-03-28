@@ -11,6 +11,6 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 		from: "onboarding@resend.dev",
 		to: email,
 		subject: "Verify your email",
-		html: `<p>Click <a href="${confirmationLink}">here</a> to verify your email.</p>`,
+		html: `<p>Click <a href="${confirmationLink}">here</a> to verify your email.<br> Link: ${confirmationLink}</p>`,
 	});
 };
