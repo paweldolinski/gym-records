@@ -2,7 +2,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const domain = "http://sokol-krzywin.pl";
+const domain = "https://sokol-krzywin.pl";
 
 export const sendVerificationEmail = async (email: string, token: string) => {
 	const confirmationLink = `${domain}/verify-email?token=${token}`;
@@ -11,6 +11,6 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 		from: "onboarding@resend.dev",
 		to: email,
 		subject: "Verify your email",
-		html: `<p>Click <a href="${confirmationLink}">here</a> to verify your email.</p>`,
+		html: `<p>Click <a href="${confirmationLink}">here</a> to verify your email.<br> Link: ${confirmationLink}</p>`,
 	});
 };
