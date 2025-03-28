@@ -1,10 +1,11 @@
+import type { Record } from "@/components/Table/types";
 import mongoose, { type Document, Schema, model } from "mongoose";
 
 export interface UserDocument extends Document {
 	email: string;
 	name: string;
 	password: string;
-	records: [];
+	records: Record[];
 	isAdmin: boolean;
 	approved: boolean;
 	createdAt: Date;

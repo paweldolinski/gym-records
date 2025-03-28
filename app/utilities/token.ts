@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { v4 as uuid4 } from "uuid";
-import VerificationToken from "../../models/verificationToken";
+import VerificationToken, {
+	type VerificationTokenDocument,
+} from "../../models/verificationToken";
 
 export const getVerificationTokenByToken = async (token: string) => {
 	try {
@@ -30,11 +32,14 @@ export const deleteVerificationToken = async (email: string) => {
 	}
 };
 
-const getVerificationTokenByEmail = async (email: string) => {
+const getVerificationTokenByEmail = async (
+	email: string,
+): Promise<VerificationTokenDocument | null> => {
 	try {
 		await VerificationToken.find({ email: email });
 	} catch (error) {
-		console.log(error);
+		console.log(`getVerificationTokenByEmail ${error}`);
+		return null;
 	}
 };
 
