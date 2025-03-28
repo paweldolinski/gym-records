@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
 
 const errorMessages: Record<string, string> = {
 	user_not_found: "Użytkownik o podanym adresie email nie istnieje.",
@@ -17,12 +16,10 @@ export default function ErrorPage() {
 	const errorMessage = errorMessages[error || "default"];
 
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<div className="error">
-				<h1>Błąd logowania</h1>
-				<p>{errorMessage}</p>
-				<Link href="/api/auth/signin">Powrót do logowania</Link>
-			</div>
-		</Suspense>
+		<div className="error">
+			<h1>Błąd logowania</h1>
+			<p>{errorMessage}</p>
+			<Link href="/api/auth/signin">Powrót do logowania</Link>
+		</div>
 	);
 }

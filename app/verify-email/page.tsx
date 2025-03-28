@@ -5,7 +5,7 @@ import { Loader } from "@/components/Loader";
 import { newVerification } from "@/utilities/newVerification";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const VerifyEmailForm = () => {
 	const [message, setMessage] = useState<string | undefined>(undefined);
@@ -38,18 +38,16 @@ const VerifyEmailForm = () => {
 	}, [token]);
 
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<div className="verify-email">
-				<Card>
-					{message ? <h1>{message}</h1> : <Loader />}
-					{success ? (
-						<>
-							Mozesz teraz <Link href="/login">zalogować</Link> się do portalu
-						</>
-					) : null}
-				</Card>
-			</div>
-		</Suspense>
+		<div className="verify-email">
+			<Card>
+				{message ? <h1>{message}</h1> : <Loader />}
+				{success ? (
+					<>
+						Mozesz teraz <Link href="/login">zalogować</Link> się do portalu
+					</>
+				) : null}
+			</Card>
+		</div>
 	);
 };
 
