@@ -5,9 +5,10 @@ import { Loader } from "@/components/Loader";
 import { newVerification } from "@/utilities/newVerification";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
-const VerifyEmailForm = () => {
+// Komponent do obsługi formularza weryfikacji email
+const VerifyEmailFormContent = () => {
 	const [message, setMessage] = useState<string | undefined>(undefined);
 	const [success, setSuccess] = useState<boolean | null>(null);
 	const searchParams = useSearchParams();
@@ -43,11 +44,20 @@ const VerifyEmailForm = () => {
 				{message ? <h1>{message}</h1> : <Loader />}
 				{success ? (
 					<>
-						Mozesz teraz <Link href="/login">zalogować</Link> się do portalu
+						Możesz teraz <Link href="/login">zalogować</Link> się do portalu
 					</>
 				) : null}
 			</Card>
 		</div>
+	);
+};
+
+// Komponent opakowany w Suspense
+const VerifyEmailForm = () => {
+	return (
+		<Suspense fallback={<div>Ładowanie...</div>}>
+			<VerifyEmailFormContent />
+		</Suspense>
 	);
 };
 

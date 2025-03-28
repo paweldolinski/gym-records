@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
+// Mapowanie błędów
 const errorMessages: Record<string, string> = {
 	user_not_found: "Użytkownik o podanym adresie email nie istnieje.",
 	wrong_password: "Podano nieprawidłowe hasło.",
@@ -10,7 +12,8 @@ const errorMessages: Record<string, string> = {
 	default: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
 };
 
-export default function ErrorPage() {
+// Komponent błędu
+function ErrorContent() {
 	const searchParams = useSearchParams();
 	const error = searchParams.get("error");
 	const errorMessage = errorMessages[error || "default"];
@@ -21,5 +24,14 @@ export default function ErrorPage() {
 			<p>{errorMessage}</p>
 			<Link href="/api/auth/signin">Powrót do logowania</Link>
 		</div>
+	);
+}
+
+// Komponent opakowany w Suspense
+export default function ErrorPage() {
+	return (
+		<Suspense fallback={<div>Ładowanie...</div>}>
+			<ErrorContent />
+		</Suspense>
 	);
 }
