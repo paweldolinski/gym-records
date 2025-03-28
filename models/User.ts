@@ -1,22 +1,6 @@
-import type { Record } from "@/components/Table/types";
-import mongoose, { type Document, Schema, model } from "mongoose";
+import mongoose, { type InferSchemaType, Schema, model } from "mongoose";
 
-export interface UserDocument extends Document {
-	email: string;
-	name: string;
-	password: string;
-	records: Record[];
-	isAdmin: boolean;
-	approved: boolean;
-	createdAt: Date;
-	updatedAt: Date;
-	img: string;
-	isEmailVerified: boolean;
-	emailVerifiedDate?: Date;
-	verificationExpiresAt: Date;
-}
-
-const UserSchema = new Schema<UserDocument>(
+const UserSchema = new Schema(
 	{
 		email: {
 			type: String,
@@ -66,6 +50,8 @@ const UserSchema = new Schema<UserDocument>(
 		timestamps: true,
 	},
 );
+
+export type UserDocument = InferSchemaType<typeof UserSchema>;
 
 UserSchema.index({ verificationExpiresAt: 1 }, { expireAfterSeconds: 0 });
 
