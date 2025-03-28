@@ -7,7 +7,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
-const VerifyEmailForm = () => {
+// Komponent do obsługi formularza weryfikacji email
+const VerifyEmailFormContent = () => {
 	const [message, setMessage] = useState<string | undefined>(undefined);
 	const [success, setSuccess] = useState<boolean | null>(null);
 	const searchParams = useSearchParams();
@@ -38,17 +39,24 @@ const VerifyEmailForm = () => {
 	}, [token]);
 
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<div className="verify-email">
-				<Card>
-					{message ? <h1>{message}</h1> : <Loader />}
-					{success ? (
-						<>
-							Mozesz teraz <Link href="/login">zalogować</Link> się do portalu
-						</>
-					) : null}
-				</Card>
-			</div>
+		<div className="verify-email">
+			<Card>
+				{message ? <h1>{message}</h1> : <Loader />}
+				{success ? (
+					<>
+						Możesz teraz <Link href="/login">zalogować</Link> się do portalu
+					</>
+				) : null}
+			</Card>
+		</div>
+	);
+};
+
+// Komponent opakowany w Suspense
+const VerifyEmailForm = () => {
+	return (
+		<Suspense fallback={<div>Ładowanie...</div>}>
+			<VerifyEmailFormContent />
 		</Suspense>
 	);
 };
