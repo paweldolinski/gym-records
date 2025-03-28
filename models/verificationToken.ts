@@ -15,7 +15,6 @@ const VerificationTokenSchema = new Schema<VerificationTokenDocument>(
 		},
 		id: {
 			type: String,
-			required: true,
 		},
 		token: {
 			type: String,
