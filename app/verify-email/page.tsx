@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
-// Komponent do obsługi formularza weryfikacji email
 const VerifyEmailFormContent = () => {
 	const [message, setMessage] = useState<string | undefined>(undefined);
 	const [success, setSuccess] = useState<boolean | null>(null);
@@ -31,7 +30,7 @@ const VerifyEmailFormContent = () => {
 				}
 			} catch (error) {
 				console.error(error);
-				setMessage("An unexpected error occurred");
+				setMessage(`An unexpected error occurred ${error}`);
 			}
 		};
 

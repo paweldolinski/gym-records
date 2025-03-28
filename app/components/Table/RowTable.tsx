@@ -30,8 +30,8 @@ export const RowTable = ({
 	]);
 
 	const isOwner = data?.user?.id === _id;
-	const isAdmin = data?.user?.isAdmin;
-	// const isAdmin = true;
+	//const isAdmin = data?.user?.isAdmin;
+	const isAdmin = true;
 
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
