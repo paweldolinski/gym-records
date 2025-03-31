@@ -79,7 +79,7 @@ export const createNewUser = async ({
 				password: hashedPassword,
 				isEmailVerified: provider === "google",
 				...(provider !== "google" && {
-					verificationExpiresAt: new Date(Date.now() + 2 * 60 * 1000), // 1h od teraz
+					verificationExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
 				}),
 			});
 
