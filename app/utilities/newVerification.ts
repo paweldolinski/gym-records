@@ -1,8 +1,16 @@
 "use server";
 import { deleteVerificationToken, getVerificationTokenByToken } from "./token";
 import { findUser, verifyEmail } from "./user";
+import mongoose from "mongoose";
+import {connectDB} from "../../lib/mongodb";
 
 export const newVerification = async (token: string) => {
+	console.log("Checking DB connection...");
+	if (mongoose.connection.readyState !== 1) {
+		console.log("MongoDB not connected! Trying to reconnect...");
+		await connectDB();  // Spróbuj ponownie połączyć się z MongoDB
+	}
+
 	try {
 		const existingToken = await getVerificationTokenByToken(token);
 
