@@ -15,9 +15,9 @@ export const getVerificationTokenByToken = async (token: string) => {
 
 export const deleteVerificationToken = async (email: string) => {
 	try {
-		const deletToken = await VerificationToken.deleteOne({ email: email });
+		const deleteToken = await VerificationToken.deleteOne({ email: email });
 
-		if (deletToken.acknowledged === true && deletToken.deletedCount === 1) {
+		if (deleteToken.acknowledged === true && deleteToken.deletedCount === 1) {
 			return NextResponse.json(
 				{ message: "Token removed", status: 200 },
 				{ status: 200 },

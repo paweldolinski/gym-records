@@ -3,27 +3,35 @@ import { deleteVerificationToken, getVerificationTokenByToken } from "./token";
 import { findUser, verifyEmail } from "./user";
 
 export const newVerification = async (token: string) => {
-	const existingToken = await getVerificationTokenByToken(token);
+	try {
+		const existingToken = await getVerificationTokenByToken(token);
 
-	if (!existingToken) {
-		return { error: "Invalid token" };
+		if (!existingToken) {
+			console.error("Token not found in database"); // Logowanie braku tokenu
+			return { error: "Invalid token" };
+		}
+
+		const hasExpired = new Date(existingToken[0].expires) < new Date();
+
+		if (hasExpired) {
+			console.error("Token has expired"); // Logowanie wygaśnięcia tokenu
+			return { error: "Token has expired" };
+		}
+
+		const existingUser = await findUser(existingToken[0]?.email);
+
+		if (!existingUser) {
+			console.error("User not found for token:", existingToken[0]?.email); // Logowanie braku użytkownika
+			return { error: "User not found" };
+		}
+
+		await verifyEmail(existingUser._id);
+
+		await deleteVerificationToken(existingToken[0].email);
+
+		return { success: "Email verified" };
+	} catch (error) {
+		console.error("Error in newVerification:", error); // Logowanie błędów w funkcji
+		throw error;
 	}
-
-	const hasExpired = new Date(existingToken[0].expires) < new Date();
-
-	if (hasExpired) {
-		return { error: "Token has expired" };
-	}
-
-	const existingUser = await findUser(existingToken[0]?.email);
-
-	if (!existingUser) {
-		return { error: "User not found" };
-	}
-
-	await verifyEmail(existingUser._id);
-
-	await deleteVerificationToken(existingToken[0].email);
-
-	return { success: "Email verified" };
 };

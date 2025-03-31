@@ -20,8 +20,14 @@ const VerifyEmailFormContent = () => {
 				return;
 			}
 
+			console.log("Verifying with token:", token);
+
 			try {
-				const { success, error } = (await newVerification(token)) || {};
+				const response = await newVerification(token);
+				console.log("Verification response:", response);
+
+				const { success, error } = response || {};
+
 				setMessage(success || error || "Verification failed");
 				if (success) {
 					setSuccess(true);
@@ -29,7 +35,7 @@ const VerifyEmailFormContent = () => {
 					setSuccess(false);
 				}
 			} catch (error) {
-				console.error(error);
+				console.error("Error in verification:", error)
 				setMessage(`An unexpected error occurred ${error}`);
 			}
 		};
