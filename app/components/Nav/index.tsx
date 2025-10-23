@@ -35,8 +35,6 @@ export const Nav: React.FC<NavProps> = ({ name, img, id }) => {
 									<ImageWithFallback
 										src={img}
 										fallbackSrc={FallbackImg.src}
-										width={60}
-										height={60}
 										alt="avatar"
 									/>
 									<p className="nav__user-name">{name}</p>

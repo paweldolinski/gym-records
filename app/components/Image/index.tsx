@@ -4,8 +4,8 @@ import { useState } from "react";
 interface ImageWithFallbackProps {
 	src?: string;
 	fallbackSrc: string;
-	width: number;
-	height: number;
+	width?: number;
+	height?: number;
 	alt: string;
 	variant?: string;
 	onAction?: () => void;
@@ -14,8 +14,6 @@ interface ImageWithFallbackProps {
 export const ImageWithFallback = ({
 	src,
 	fallbackSrc,
-	width,
-	height,
 	alt,
 	variant,
 	onAction,
