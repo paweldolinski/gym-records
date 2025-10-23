@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import React, { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import FallbackImg from "../../assets/9dca345c5519d191af167abedf3b76ac.jpg";
 import { ImageWithFallback } from "../Image";
 import { AdminButtons } from "./AdminButtons";
@@ -30,8 +30,8 @@ export const RowTable = ({
 	]);
 
 	const isOwner = data?.user?.id === _id;
-	//const isAdmin = data?.user?.isAdmin;
-	const isAdmin = true;
+	const isAdmin = data?.user?.isAdmin;
+
 
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -53,7 +53,11 @@ export const RowTable = ({
 		try {
 			const response = await fetch("/api/users", {
 				method: "POST",
-				body: JSON.stringify({ id: _id, records: inputData, type: "update" }),
+				body: JSON.stringify({
+					id: _id,
+					records: inputData,
+					type: "recordsUpdate",
+				}),
 			});
 
 			const {
@@ -99,7 +103,7 @@ export const RowTable = ({
 	}, [records]);
 
 	return (
-		<div className="table__row-wrapper">
+		<div className={`table__row-wrapper ${isOwner ? "owner" : ""}`}>
 			<div className={`table__cells-wrapper ${isEdit ? "active" : ""}`}>
 				<div className="table__cell" data-type="user">
 					<ImageWithFallback

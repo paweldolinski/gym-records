@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import Image from "next/image";
+import { useState } from "react";
 
 interface ImageWithFallbackProps {
 	src?: string;
@@ -7,6 +7,8 @@ interface ImageWithFallbackProps {
 	width: number;
 	height: number;
 	alt: string;
+	variant?: string;
+	onAction?: () => void;
 }
 
 export const ImageWithFallback = ({
@@ -15,17 +17,20 @@ export const ImageWithFallback = ({
 	width,
 	height,
 	alt,
+	variant,
+	onAction,
 }: ImageWithFallbackProps) => {
 	const [imgSrc, setImgSrc] = useState<string>(src || fallbackSrc);
 
 	return (
-		<div className="img">
+		<div className={`img ${variant}`} onClick={onAction}>
 			<Image
 				src={imgSrc}
 				onError={() => setImgSrc(fallbackSrc)}
-				width={width}
-				height={height}
 				alt={alt}
+				fill
+				sizes="40px"
+				style={{ objectFit: "cover" }}   // brak rozciągania, ładne kadrowanie
 			/>
 		</div>
 	);

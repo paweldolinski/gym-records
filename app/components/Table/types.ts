@@ -12,6 +12,7 @@ export interface UsersData {
 	_id: string;
 	approved: boolean;
 	img: string;
+	isOwner?: boolean;
 }
 
 export interface OwnerButtonsProps {

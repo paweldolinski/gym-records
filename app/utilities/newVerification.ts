@@ -1,8 +1,8 @@
 "use server";
+import mongoose from "mongoose";
+import { connectDB } from "../../lib/mongodb";
 import { deleteVerificationToken, getVerificationTokenByToken } from "./token";
 import { findUser, verifyEmail } from "./user";
-import mongoose from "mongoose";
-import {connectDB} from "../../lib/mongodb";
 
 export const newVerification = async (token: string) => {
 	console.log("Checking DB connection...");
@@ -15,21 +15,21 @@ export const newVerification = async (token: string) => {
 		const existingToken = await getVerificationTokenByToken(token);
 
 		if (!existingToken) {
-			console.error("Token not found in database"); // Logowanie braku tokenu
+			console.error("Token not found in database");
 			return { error: "Invalid token" };
 		}
 
-		const hasExpired = new Date(existingToken[0].expires) < new Date();
+		const hasExpired = new Date(existingToken[0]?.expires) < new Date();
 
 		if (hasExpired) {
-			console.error("Token has expired"); // Logowanie wygaśnięcia tokenu
+			console.error("Token has expired");
 			return { error: "Token has expired" };
 		}
 
 		const existingUser = await findUser(existingToken[0]?.email);
 
 		if (!existingUser) {
-			console.error("User not found for token:", existingToken[0]?.email); // Logowanie braku użytkownika
+			console.error("User not found for token:", existingToken[0]?.email);
 			return { error: "User not found" };
 		}
 
@@ -39,7 +39,7 @@ export const newVerification = async (token: string) => {
 
 		return { success: "Email verified" };
 	} catch (error) {
-		console.error("Error in newVerification:", error); // Logowanie błędów w funkcji
+		console.error("Error in newVerification:", error);
 		throw error;
 	}
 };

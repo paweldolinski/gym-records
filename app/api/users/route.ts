@@ -2,12 +2,20 @@ import {
 	handleApproval,
 	handleDelete,
 	handleRegister,
-	handleUpdate,
+	handleUpdateProfile,
+	handleUpdateRecord,
 } from "@/utilities/userActions";
+import { v2 as cloudinary } from "cloudinary";
 import type { Document } from "mongoose";
 import { NextResponse } from "next/server";
 import { connectDB } from "../../../lib/mongodb";
 import User, { type UserDocument } from "../../../models/User";
+
+cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export interface UpdateRequestBody {
 	id: string;
@@ -15,13 +23,21 @@ export interface UpdateRequestBody {
 	password: string;
 	email: string;
 	records?: [];
-	type?: "approve" | "reject" | "update" | "register" | "delete";
+	type?:
+		| "approve"
+		| "reject"
+		| "recordsUpdate"
+		| "profileUpdate"
+		| "register"
+		| "delete"
+		| "profile"
+		| "imageUpdate";
 }
 
 export async function POST(req: Request) {
 	try {
 		const body: UpdateRequestBody = await req.json();
-		const { id, records, type } = body;
+		const { id, records, type, data, img } = body;
 
 		await connectDB();
 
@@ -29,14 +45,52 @@ export async function POST(req: Request) {
 			case "register":
 				return await handleRegister(body);
 
-			case "update":
+			case "recordsUpdate":
 				if (!id || !records) {
 					return NextResponse.json(
 						{ message: "Missing ID or records for update" },
 						{ status: 400 },
 					);
 				}
-				return await handleUpdate(id, records);
+				return await handleUpdateRecord(id, records);
+
+			case "profileUpdate":
+				if (!id || !data) {
+					return NextResponse.json(
+						{ message: "Missing ID or data for update" },
+						{ status: 400 },
+					);
+				}
+				return await handleUpdateProfile(id, data);
+
+			case "imageUpdate":
+				if (!id || !img) {
+					return NextResponse.json(
+						{ message: "Missing ID or data for update" },
+						{ status: 400 },
+					);
+				}
+
+				try {
+					const uploadRes = await cloudinary.uploader.upload(img, {
+						folder: "profile-photos",
+					});
+
+					const { status, message } = await handleUpdateProfile(id, {
+						img: uploadRes.secure_url,
+					});
+
+					if (status !== 201) {
+						return NextResponse.json({ message: message }, { status: 400 });
+					}
+
+					return NextResponse.json(
+						{ url: uploadRes.secure_url },
+						{ status: 200 },
+					);
+				} catch (error) {
+					return NextResponse.json({ message: error }, { status: 400 });
+				}
 
 			case "approve":
 				if (!id)

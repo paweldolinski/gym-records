@@ -20,7 +20,7 @@ export const handleRegister = async (body: UpdateRequestBody) => {
 	}
 };
 
-export const handleUpdate = async (id: string, records: []) => {
+export const handleUpdateRecord = async (id: string, records: []) => {
 	const updatedUser = await User.findOneAndUpdate(
 		{ _id: id },
 		{ $set: { records } },
@@ -30,6 +30,26 @@ export const handleUpdate = async (id: string, records: []) => {
 	if (updatedUser) {
 		return NextResponse.json(
 			{ message: "Updating account successfully", user: updatedUser },
+			{ status: 201 },
+		);
+	}
+
+	return NextResponse.json(
+		{ message: "Failed to update account" },
+		{ status: 404 },
+	);
+};
+
+export const handleUpdateProfile = async (id: string, data: object) => {
+	const updatedUser = await User.findOneAndUpdate(
+		{ _id: id },
+		{ $set: data },
+		{ returnNewDocument: true, returnDocument: "after" },
+	);
+
+	if (updatedUser) {
+		return NextResponse.json(
+			{ message: "Updating account successfully", updatedData: data },
 			{ status: 201 },
 		);
 	}
