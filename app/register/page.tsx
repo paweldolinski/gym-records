@@ -105,6 +105,7 @@ export default function RegisterPage() {
 						<Input
 							type="email"
 							name="email"
+							placeholder="Email"
 							onChange={handleChange}
 							required={true}
 							value={formData.email}
@@ -117,6 +118,7 @@ export default function RegisterPage() {
 							onChange={handleChange}
 							required={true}
 							value={formData.password}
+							placeholder="Hasło"
 						/>
 						<Input
 							type="password"
@@ -126,6 +128,7 @@ export default function RegisterPage() {
 							value={formData.confirmPassword}
 							errorMsg={"Hasła nie są takie same."}
 							pattern={`^${formData.password.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}$`}
+							placeholder="Powtórz hasło"
 						/>
 						<button type="submit" disabled={isLoading}>
 							{isLoading ? "Rejestracja..." : "Zarejestruj się"}
