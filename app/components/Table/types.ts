@@ -13,6 +13,7 @@ export interface UsersData {
 	approved: boolean;
 	img: string;
 	isOwner?: boolean;
+	isEmailVerified?: boolean;
 }
 
 export interface OwnerButtonsProps {

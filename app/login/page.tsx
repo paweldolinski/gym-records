@@ -5,7 +5,7 @@ import { Input } from "@/components/Input/input";
 import { Nav } from "@/components/Nav";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const LoginPage = () => {
 	const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -18,7 +18,7 @@ const LoginPage = () => {
 		setError("");
 	};
 
-	const handleCredetnialsLogin = async () => {
+	const handleCredentialsLogin = async () => {
 		const { email, password } = credentials;
 
 		if (!email) {
@@ -31,7 +31,7 @@ const LoginPage = () => {
 			return;
 		}
 
-		signIn("credentials", {
+		await signIn("credentials", {
 			email: credentials.email,
 			password: credentials.password,
 			redirect: true,
@@ -49,20 +49,22 @@ const LoginPage = () => {
 			<Card>
 				<div className="login">
 					<div className="login__form-wrapper">
-						{error ? <p>{error}</p> : null}
+						{error ? <p className="login__error">{error}</p> : null}
 						<Input
 							type="text"
 							name="email"
 							onChange={handleInputChange}
 							label="Email"
+							value={credentials.email}
 						/>
 						<Input
 							name="password"
 							onChange={handleInputChange}
 							label="Password"
 							type="password"
+							value={credentials.password}
 						/>
-						<button type="button" onClick={handleCredetnialsLogin}>
+						<button type="button" onClick={handleCredentialsLogin}>
 							Zaloguj się
 						</button>
 						<p>
