@@ -1,9 +1,9 @@
 import { findUserBySlug } from "@/utilities/user";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "../../../../lib/mongodb";
 
 export async function GET(
-	request: Request,
+	request: NextRequest,
 	{ params }: { params: { slug: string } },
 ) {
 	const { slug } = params;
