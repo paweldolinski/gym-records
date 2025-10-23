@@ -35,7 +35,7 @@ const VerifyEmailFormContent = () => {
 					setSuccess(false);
 				}
 			} catch (error) {
-				console.error("Error in verification:", error)
+				console.error("Error in verification:", error);
 				setMessage(`An unexpected error occurred ${error}`);
 			}
 		};
@@ -46,7 +46,17 @@ const VerifyEmailFormContent = () => {
 	return (
 		<div className="verify-email">
 			<Card>
-				{message ? <h1>{message}</h1> : <Loader />}
+				{message ? (
+					<>
+						<h1>{message}</h1>
+						<br />
+						<Link href="/">Tabela</Link>
+						<br />
+						<br />
+					</>
+				) : (
+					<Loader />
+				)}
 				{success ? (
 					<>
 						Możesz teraz <Link href="/login">zalogować</Link> się do portalu
@@ -57,10 +67,9 @@ const VerifyEmailFormContent = () => {
 	);
 };
 
-// Komponent opakowany w Suspense
 const VerifyEmailForm = () => {
 	return (
-		<Suspense fallback={<div>Ładowanie...</div>}>
+		<Suspense fallback={<Loader />}>
 			<VerifyEmailFormContent />
 		</Suspense>
 	);

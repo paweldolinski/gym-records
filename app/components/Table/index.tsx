@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Loader } from "../Loader";
 import { HeaderTable } from "./HeaderTable";
 import { RowTable } from "./RowTable";
@@ -107,6 +107,8 @@ export const Table = () => {
 		}
 	}, [sortingExercise.exercise, sortingExercise.type, sortingData]);
 
+	console.log(data);
+
 	return isLoading ? (
 		<Loader />
 	) : (
@@ -114,19 +116,20 @@ export const Table = () => {
 			<div className="table__table-wrapper">
 				<HeaderTable setSortingExerciseAndType={setSortingExerciseAndType} />
 				{(sortedData || data)?.map(
-					({ records, _id, name, email, approved, img }) => (
-						<RowTable
-							name={name}
-							email={email}
-							records={records}
-							key={_id}
-							_id={_id}
-							setData={setData}
-							handleUserAction={handleUserAction}
-							approved={approved}
-							img={img}
-						/>
-					),
+					({ records, _id, name, email, approved, img, isEmailVerified }) =>
+						isEmailVerified ? (
+							<RowTable
+								name={name}
+								email={email}
+								records={records}
+								key={_id}
+								_id={_id}
+								setData={setData}
+								handleUserAction={handleUserAction}
+								approved={approved}
+								img={img}
+							/>
+						) : null,
 				)}
 			</div>
 		</div>

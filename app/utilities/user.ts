@@ -45,6 +45,17 @@ export const verifyEmail = async (id: string) => {
 	);
 };
 
+export const findUserBySlug = async (slug: string) => {
+	try {
+		const user = await User.findOne({ _id: slug });
+
+		return user;
+	} catch (error) {
+		console.log(`Find user by ID: ${error}`);
+		return null;
+	}
+};
+
 export const findUser = async (email: string) => {
 	try {
 		const user = await User.findOne({ email: email });
@@ -67,7 +78,7 @@ export const createNewUser = async ({
 		await connectDB();
 		const existingUser = await User.findOne({ email: email });
 		const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
-
+		console.log("====", image);
 		if (!existingUser) {
 			await User.create({
 				email: email,
@@ -79,13 +90,13 @@ export const createNewUser = async ({
 				password: hashedPassword,
 				isEmailVerified: provider === "google",
 				...(provider !== "google" && {
-					verificationExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
+					verificationExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
 				}),
 			});
 
 			if (provider !== "google") {
 				const verificationToken = await generateVerificationToken(email);
-				await sendVerificationEmail(email, verificationToken.token);
+				await sendVerificationEmail(email, verificationToken.token, name);
 			}
 
 			return NextResponse.json(

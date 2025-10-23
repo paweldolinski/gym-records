@@ -65,7 +65,7 @@ export const authOptions: AuthOptions = {
 			try {
 				await createNewUser({ email, name, image, provider });
 
-				console.log("callbacks", provider);
+				console.log("callbacks", image);
 
 				return true;
 			} catch (err) {
@@ -81,6 +81,7 @@ export const authOptions: AuthOptions = {
 				_id,
 				isAdmin,
 				approved,
+				img,
 			} = await User.findOne({
 				email: token.email,
 			});
@@ -91,10 +92,11 @@ export const authOptions: AuthOptions = {
 				id: _id,
 				isAdmin: isAdmin,
 				approved: approved,
+				img,
 			};
 		},
 		session: async ({ session, token }) => {
-			const { records, id, isAdmin, approved } = token;
+			const { records, id, isAdmin, approved, img } = token;
 
 			return {
 				...session,
@@ -104,6 +106,7 @@ export const authOptions: AuthOptions = {
 					id: id,
 					isAdmin: isAdmin,
 					approved: approved,
+					image: img,
 				},
 			};
 		},

@@ -1,9 +1,19 @@
 .input {
-    &__wrapper {
-        text-align: left;
-    }
-    
+    text-align: left;
+
     &__label {
         color: white;
+    }
+
+    &__input {
+        &.error-active {
+            border: solid red 2px;
+            margin-bottom: 5px;
+        }
+    }
+
+    &__error-msg {
+        margin-bottom: 20px;
+        color: red;
     }
 }

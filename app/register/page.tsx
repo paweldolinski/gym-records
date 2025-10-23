@@ -1,6 +1,8 @@
 "use client";
 
 import Card from "@/components/Card";
+import { Input } from "@/components/Input/input";
+import { Loader } from "@/components/Loader";
 import { Nav } from "@/components/Nav";
 import { useState } from "react";
 
@@ -16,20 +18,29 @@ export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
+		const { name, value, pattern } = e.target;
+		console.log(pattern);
+
 		setFormData((prev) => ({
 			...prev,
 			[name]: value,
 		}));
 	};
+	console.log(error, formData);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (formData.password !== formData.confirmPassword) {
-			setError("Hasła nie są takie same.");
+		if (
+			!formData.name ||
+			!formData.email ||
+			!formData.password ||
+			!formData.confirmPassword
+		) {
+			setError("Wszystkie pola są wymagane!");
 			return;
 		}
+
 		setIsLoading(true);
 
 		try {
@@ -74,55 +85,55 @@ export default function RegisterPage() {
 			<Card>
 				<h1>Rejestracja</h1>
 				{error && <p>{error}</p>}
-				{success && (
+				{success ? (
 					<p>
 						Rejestracja zakończona sukcesem! <br /> Sprawdź maila w celu
 						weryfikacji konta
 					</p>
+				) : (
+					<form onSubmit={handleSubmit}>
+						<Input
+							name="name"
+							placeholder="Imię"
+							type="text"
+							required={true}
+							onChange={handleChange}
+							errorMsg="Imię może składać się tylko z liter i musi mieć przynajmniej 3 znaki"
+							pattern="^[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż ]+$"
+							value={formData.name}
+						/>
+						<Input
+							type="email"
+							name="email"
+							onChange={handleChange}
+							required={true}
+							value={formData.email}
+							pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+							errorMsg="Podaj email w poprawnym formacie"
+						/>
+						<Input
+							type="password"
+							name="password"
+							onChange={handleChange}
+							required={true}
+							value={formData.password}
+						/>
+						<Input
+							type="password"
+							name="confirmPassword"
+							onChange={handleChange}
+							required={true}
+							value={formData.confirmPassword}
+							errorMsg={"Hasła nie są takie same."}
+							pattern={`^${formData.password.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}$`}
+						/>
+						<button type="submit" disabled={isLoading}>
+							{isLoading ? "Rejestracja..." : "Zarejestruj się"}
+						</button>
+					</form>
 				)}
-				{isLoading && <p>loading</p>}
-				<form onSubmit={handleSubmit}>
-					<input
-						placeholder="Imię"
-						type="text"
-						id="name"
-						name="name"
-						value={formData.name}
-						onChange={handleChange}
-						required
-					/>
-
-					<input
-						type="email"
-						id="email"
-						name="email"
-						value={formData.email}
-						onChange={handleChange}
-						required
-					/>
-
-					<input
-						type="password"
-						id="password"
-						name="password"
-						value={formData.password}
-						onChange={handleChange}
-						required
-					/>
-
-					<input
-						type="password"
-						id="confirmPassword"
-						name="confirmPassword"
-						value={formData.confirmPassword}
-						onChange={handleChange}
-						required
-					/>
-					<button type="submit" disabled={isLoading}>
-						{isLoading ? "Rejestracja..." : "Zarejestruj się"}
-					</button>
-				</form>
 			</Card>
+			{isLoading ? <Loader /> : null}
 		</div>
 	);
 }

@@ -12,11 +12,11 @@ export const OwnerButtons = ({
 				type="button"
 				className="table__btn"
 			>
-				{isEdit ? "close" : "Edit"}
+				{isEdit ? "Zamknij" : "Edytuj"}
 			</button>
 			{isEdit ? (
 				<button onClick={() => onSave()} type="button" className="table__btn">
-					Save
+					Zapisz
 				</button>
 			) : null}
 		</div>
