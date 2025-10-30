@@ -24,8 +24,6 @@ const VerifyEmailFormContent = () => {
 
 			try {
 				const response = await newVerification(token);
-				console.log("Verification response:", response);
-
 				const { success, error } = response || {};
 
 				setMessage(success || error || "Verification failed");

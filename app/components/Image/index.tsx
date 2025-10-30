@@ -28,7 +28,7 @@ export const ImageWithFallback = ({
 				alt={alt}
 				fill
 				sizes="40px"
-				style={{ objectFit: "cover" }}   // brak rozciągania, ładne kadrowanie
+				style={{ objectFit: "cover" }} // brak rozciągania, ładne kadrowanie
 			/>
 		</div>
 	);

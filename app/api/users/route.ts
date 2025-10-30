@@ -32,8 +32,8 @@ export interface UpdateRequestBody {
 		| "delete"
 		| "profile"
 		| "imageUpdate";
-	data: object,
-	img: string
+	data: object;
+	img: string;
 }
 
 export async function POST(req: Request) {
@@ -81,11 +81,13 @@ export async function POST(req: Request) {
 					const res = await handleUpdateProfile(id, {
 						img: uploadRes.secure_url,
 					});
-					 const body= await res.json();
-
+					const body = await res.json();
 
 					if (res.status !== 201) {
-						return NextResponse.json({ message: body.message }, { status: 400 });
+						return NextResponse.json(
+							{ message: body.message },
+							{ status: 400 },
+						);
 					}
 
 					return NextResponse.json(

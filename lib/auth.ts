@@ -98,15 +98,16 @@ export const authOptions: AuthOptions = {
 		session: async ({ session, token }) => {
 			const { records, id, isAdmin, approved, img } = token;
 
-			if(session.user){
+			if (session.user) {
 				session.user.id = (id as string) ?? "";
 				session.user.isAdmin = isAdmin as boolean | undefined;
 				session.user.approved = approved as boolean | undefined;
 				session.user.records = records as unknown[] | undefined;
-				session.user.image = (img as string | null) ?? session.user.image ?? null;
+				session.user.image =
+					(img as string | null) ?? session.user.image ?? null;
 			}
 
-			return session
+			return session;
 		},
 	},
 };

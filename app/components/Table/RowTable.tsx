@@ -1,6 +1,11 @@
 "use client";
 import { useSession } from "next-auth/react";
-import React, { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import React, {
+	type Dispatch,
+	type SetStateAction,
+	useEffect,
+	useState,
+} from "react";
 import FallbackImg from "../../assets/9dca345c5519d191af167abedf3b76ac.jpg";
 import { ImageWithFallback } from "../Image";
 import { AdminButtons } from "./AdminButtons";
@@ -31,7 +36,6 @@ export const RowTable = ({
 
 	const isOwner = data?.user?.id === _id;
 	const isAdmin = data?.user?.isAdmin;
-
 
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -154,6 +158,7 @@ export const RowTable = ({
 					isEdit={isEdit}
 					onSave={onSave}
 					onDelete={() => onDelete(_id)}
+					approved={approved}
 				/>
 			) : null}
 		</div>
