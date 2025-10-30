@@ -78,7 +78,7 @@ export const createNewUser = async ({
 		await connectDB();
 		const existingUser = await User.findOne({ email: email });
 		const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
-		console.log("====", image);
+
 		if (!existingUser) {
 			await User.create({
 				email: email,
@@ -90,7 +90,7 @@ export const createNewUser = async ({
 				password: hashedPassword,
 				isEmailVerified: provider === "google",
 				...(provider !== "google" && {
-					verificationExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+					verificationExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
 				}),
 			});
 

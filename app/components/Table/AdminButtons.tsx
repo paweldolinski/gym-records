@@ -1,4 +1,6 @@
 import type { AdminButtonsProps } from "./types";
+import { ConfirmDialog } from "@/components/Dialog";
+import { useState } from "react";
 
 export const AdminButtons = ({
 	onDelete,
@@ -6,15 +8,38 @@ export const AdminButtons = ({
 	setIsEdit,
 	isEdit,
 	onSave,
+	approved,
 }: AdminButtonsProps) => {
+	const [isOnDeleteOpen, setIsOnDeleteOpen] = useState(false);
+
 	return (
 		<div className="table__btns-wrapper">
-			<button type="button" className="table__btn" onClick={() => onApprove()}>
-				Zatwierdz
-			</button>
-			<button type="button" className="table__btn" onClick={() => onDelete()}>
+			{!approved ? (
+				<button
+					type="button"
+					className="table__btn"
+					onClick={() => onApprove()}
+				>
+					Zatwierdz
+				</button>
+			) : null}
+
+			<button
+				type="button"
+				className="table__btn"
+				onClick={() => setIsOnDeleteOpen(true)}
+			>
 				Usuń
 			</button>
+			{isOnDeleteOpen ? (
+				<ConfirmDialog
+					onConfirm={() => onDelete()}
+					onCancel={() => setIsOnDeleteOpen(false)}
+					title="Na pewno?"
+					description="Tej operacji nie można cofnąć."
+				/>
+			) : null}
+
 			<button
 				onClick={() => setIsEdit(!isEdit)}
 				type="button"

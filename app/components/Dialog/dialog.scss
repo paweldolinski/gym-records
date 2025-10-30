@@ -1,0 +1,29 @@
+.dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+
+  &__wrapper {
+    padding: 20px 40px;
+    background-color: white;
+    border: solid 2px black;
+  }
+
+  button {
+    padding: 5px 10px;
+    &:first-child {
+      margin-right: 15px;
+    }
+  }
+
+  &__btns-wrapper {
+    margin-top: 10px;
+  }
+}

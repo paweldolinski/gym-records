@@ -13,7 +13,10 @@ export async function GET(req: Request) {
 		const user = await findUserBySlug(slug);
 
 		if (!user) {
-			return NextResponse.json({ message: "Użytkownik nie znaleziony" }, { status: 404 });
+			return NextResponse.json(
+				{ message: "Użytkownik nie znaleziony" },
+				{ status: 404 },
+			);
 		}
 		return NextResponse.json(user, { status: 200 });
 	} catch (err) {
