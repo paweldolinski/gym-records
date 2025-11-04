@@ -210,6 +210,7 @@ export default function Page() {
 								disabled={!isEdit}
 								name={exercise}
 								data-type="classic"
+								type="number"
 							/>
 							<input
 								className="profile__input"
@@ -218,6 +219,7 @@ export default function Page() {
 								disabled={!isEdit}
 								name={exercise}
 								data-type="gear"
+								type="number"
 							/>
 						</div>
 					))}
