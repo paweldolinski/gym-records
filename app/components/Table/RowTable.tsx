@@ -13,15 +13,15 @@ import { OwnerButtons } from "./OwnerButtons";
 import type { Record, UsersData } from "./types";
 
 interface RowTableProps extends UsersData {
-	setData: Dispatch<SetStateAction<UsersData[] | null>>;
-	handleUserAction: (id: string, actionType: "approve" | "reject") => void;
+	setDataAction: Dispatch<SetStateAction<UsersData[] | null>>;
+	handleUserAction: (id: string, actionType: "approve" ) => void;
 }
 
 export const RowTable = ({
 	name,
 	records,
 	_id,
-	setData,
+ 	setDataAction,
 	approved,
 	handleUserAction,
 	img,
@@ -68,7 +68,7 @@ export const RowTable = ({
 				user: { records },
 			} = await response.json();
 
-			setData((prev) =>
+			setDataAction((prev) =>
 				prev
 					? prev?.map((user) =>
 							user._id === _id ? { ...user, records: records } : user,
@@ -89,7 +89,7 @@ export const RowTable = ({
 
 			const { status } = await response.json();
 			if (status === 200) {
-				setData((prev) => (prev ? prev.filter((user) => user._id !== id) : []));
+				setDataAction((prev) => (prev ? prev.filter((user) => user._id !== id) : []));
 			}
 		} catch (error) {
 			console.log(error);
@@ -135,6 +135,7 @@ export const RowTable = ({
 							disabled={!isEdit}
 							name={exercise}
 							data-type="classic"
+							type="number"
 						/>
 						<input
 							className="table__cell--input"
@@ -144,6 +145,7 @@ export const RowTable = ({
 							disabled={!isEdit}
 							name={exercise}
 							data-type="gear"
+							type="number"
 						/>
 					</div>
 				))}
