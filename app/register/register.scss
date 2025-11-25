@@ -6,13 +6,12 @@
         margin-bottom: 20px;
     }
 
-
     form {
         max-width: 600px;
         margin: 0 auto;
     }
 
-    input{
+    input {
         height: 50px;
         width: 100%;
         margin-bottom: 10px;
@@ -21,5 +20,17 @@
     button {
         padding: 5px 10px;
         cursor: pointer;
+    }
+
+    &__terms {
+        margin: 20px 0 40px 0;
+
+        label {
+            display: flex;
+        }
+
+        input {
+            margin: 0 10px 0 0;
+        }
     }
 }

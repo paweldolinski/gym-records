@@ -1,160 +1,175 @@
-import {
-	handleApproval,
-	handleDelete,
-	handleRegister,
-	handleUpdateProfile,
-	handleUpdateRecord,
-} from "@/utilities/userActions";
 import { v2 as cloudinary } from "cloudinary";
 import type { Document } from "mongoose";
 import { NextResponse } from "next/server";
+import {
+  handleApproval,
+  handleDelete,
+  handleRegister,
+  handleUpdateProfile,
+  handleUpdateRecord,
+} from "@/utilities/userActions";
 import { connectDB } from "../../../lib/mongodb";
 import User, { type UserDocument } from "../../../models/User";
 
 cloudinary.config({
-	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-	api_key: process.env.CLOUDINARY_API_KEY,
-	api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export interface UpdateRequestBody {
-	id: string;
-	name: string;
-	password: string;
-	email: string;
-	records?: [];
-	type?:
-		| "approve"
-		| "reject"
-		| "recordsUpdate"
-		| "profileUpdate"
-		| "register"
-		| "delete"
-		| "profile"
-		| "imageUpdate";
-	data: object;
-	img: string;
+  id: string;
+  name: string;
+  password: string;
+  email: string;
+  records?: [];
+  type?:
+    | "approve"
+    | "reject"
+    | "recordsUpdate"
+    | "profileUpdate"
+    | "register"
+    | "delete"
+    | "profile"
+    | "imageUpdate";
+  data: object;
+  img: string;
+  terms?: boolean;
 }
 
 export async function POST(req: Request) {
-	try {
-		const body: UpdateRequestBody = await req.json();
-		const { id, records, type, data, img } = body;
+  try {
+    const body: UpdateRequestBody = await req.json();
+    const { id, records, type, data, img } = body;
 
-		await connectDB();
+    console.log("body", body);
 
-		switch (type) {
-			case "register":
-				return await handleRegister(body);
+    await connectDB();
 
-			case "recordsUpdate":
-				if (!id || !records) {
-					return NextResponse.json(
-						{ message: "Missing ID or records for update" },
-						{ status: 400 },
-					);
-				}
-				return await handleUpdateRecord(id, records);
+    switch (type) {
+      case "register":
+        return await handleRegister(body);
 
-			case "profileUpdate":
-				if (!id || !data) {
-					return NextResponse.json(
-						{ message: "Missing ID or data for update" },
-						{ status: 400 },
-					);
-				}
-				return await handleUpdateProfile(id, data);
+      case "recordsUpdate":
+        if (!id || !records) {
+          return NextResponse.json(
+            { message: "Missing ID or records for update" },
+            { status: 400 },
+          );
+        }
+        return await handleUpdateRecord(id, records);
 
-			case "imageUpdate":
-				if (!id || !img) {
-					return NextResponse.json(
-						{ message: "Missing ID or data for update" },
-						{ status: 400 },
-					);
-				}
+      case "profileUpdate":
+        if (!id || !data) {
+          return NextResponse.json(
+            { message: "Missing ID or data for update" },
+            { status: 400 },
+          );
+        }
+        return await handleUpdateProfile(id, data);
 
-				try {
-					const uploadRes = await cloudinary.uploader.upload(img, {
-						folder: "profile-photos",
-					});
+      case "imageUpdate":
+        if (!id || !img) {
+          return NextResponse.json(
+            { message: "Missing ID or data for update" },
+            { status: 400 },
+          );
+        }
 
-					const res = await handleUpdateProfile(id, {
-						img: uploadRes.secure_url,
-					});
-					const body = await res.json();
+        try {
+          const uploadRes = await cloudinary.uploader.upload(img, {
+            folder: "profile-photos",
+          });
 
-					if (res.status !== 201) {
-						return NextResponse.json(
-							{ message: body.message },
-							{ status: 400 },
-						);
-					}
+          const res = await handleUpdateProfile(id, {
+            img: uploadRes.secure_url,
+          });
+          const body = await res.json();
 
-					return NextResponse.json(
-						{ url: uploadRes.secure_url },
-						{ status: 200 },
-					);
-				} catch (error) {
-					return NextResponse.json({ message: error }, { status: 400 });
-				}
+          if (res.status !== 201) {
+            return NextResponse.json(
+              { message: body.message },
+              { status: 400 },
+            );
+          }
 
-			case "approve":
-				if (!id)
-					return NextResponse.json(
-						{ message: "ID is required" },
-						{ status: 400 },
-					);
-				return await handleApproval(id, true);
+          return NextResponse.json(
+            { url: uploadRes.secure_url },
+            { status: 200 },
+          );
+        } catch (error) {
+          return NextResponse.json({ message: error }, { status: 400 });
+        }
 
-			case "reject":
-				if (!id)
-					return NextResponse.json(
-						{ message: "ID is required" },
-						{ status: 400 },
-					);
-				return await handleApproval(id, false);
+      case "approve":
+        if (!id)
+          return NextResponse.json(
+            { message: "ID is required" },
+            { status: 400 },
+          );
+        return await handleApproval(id, true);
 
-			default:
-				return NextResponse.json(
-					{ message: "Invalid action type" },
-					{ status: 400 },
-				);
-		}
-	} catch (error) {
-		console.error(error);
-		return NextResponse.json(
-			{ message: "Something went wrong", error },
-			{ status: 500 },
-		);
-	}
+      case "reject":
+        if (!id)
+          return NextResponse.json(
+            { message: "ID is required" },
+            { status: 400 },
+          );
+        return await handleApproval(id, false);
+
+      default:
+        return NextResponse.json(
+          { message: "Invalid action type" },
+          { status: 400 },
+        );
+    }
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Something went wrong", error },
+      { status: 500 },
+    );
+  }
 }
 
 export async function GET() {
-	try {
-		await connectDB();
+  try {
+    await connectDB();
 
-		const users = await User.find().lean<Document<UserDocument>[]>();
+    const users = await User.find().lean<Document<UserDocument>[]>();
 
-		return NextResponse.json(users, { status: 200 });
-	} catch (err) {
-		return NextResponse.json({ message: "Error", err }, { status: 500 });
-	}
+    return NextResponse.json(users, { status: 200 });
+  } catch (e) {
+    const err =
+      e instanceof Error
+        ? {
+            name: e.name,
+            message: e.message,
+            ...(process.env.NODE_ENV !== "production" && { stack: e.stack }),
+            ...((e as any).code && { code: (e as any).code }),
+            ...((e as any).reason && { reason: (e as any).reason }),
+          }
+        : { error: String(e) };
+
+    console.log("err", err);
+    return NextResponse.json({ message: "Error", err }, { status: 500 });
+  }
 }
 
 export async function DELETE(req: Request) {
-	const body: UpdateRequestBody = await req.json();
-	const { id } = body;
-	try {
-		await connectDB();
-		if (!id)
-			return NextResponse.json({ message: "ID is required" }, { status: 400 });
-		// return await handleDeleteAll();
+  const body: UpdateRequestBody = await req.json();
+  const { id } = body;
+  try {
+    await connectDB();
+    if (!id)
+      return NextResponse.json({ message: "ID is required" }, { status: 400 });
+    // return await handleDeleteAll();
 
-		return await handleDelete(id);
-	} catch (error) {
-		return NextResponse.json(
-			{ message: "Something went wrong with delete user", error },
-			{ status: 500 },
-		);
-	}
+    return await handleDelete(id);
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Something went wrong with delete user", error },
+      { status: 500 },
+    );
+  }
 }

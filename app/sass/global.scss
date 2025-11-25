@@ -36,3 +36,8 @@ main {
 button {
     cursor: pointer;
 }
+
+input[type="checkbox"] {
+    flex-grow: 0;
+    flex-shrink: 0;
+}

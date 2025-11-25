@@ -1,11 +1,11 @@
 import React from "react";
 
 interface CardProps {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 const Card: React.FC<CardProps> = ({ children }) => {
-	return <div className="card">{children}</div>;
+  return <div className="card">{children}</div>;
 };
 
 export default Card;

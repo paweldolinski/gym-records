@@ -1,54 +1,63 @@
-import mongoose, { type InferSchemaType, Schema, model } from "mongoose";
+import mongoose, { type InferSchemaType, model, Schema } from "mongoose";
 
 const UserSchema = new Schema(
-	{
-		email: {
-			type: String,
-			required: true,
-		},
-		name: {
-			type: String,
-		},
-		password: {
-			type: String,
-		},
-		records: {
-			type: [
-				{
-					exercise: { type: String },
-					classic: { type: String },
-					gear: { type: String },
-				},
-			],
-		},
-		isAdmin: {
-			type: Boolean,
-			default: false,
-		},
-		approved: {
-			type: Boolean,
-			default: false,
-		},
+  {
+    email: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+    },
+    password: {
+      type: String,
+    },
+    terms: {
+      type: Boolean,
+    },
+    healthConsent: {
+      type: Boolean,
+    },
+    termsAndHealthConsentTimestamp: {
+      type: Date,
+    },
+    records: {
+      type: [
+        {
+          exercise: { type: String },
+          classic: { type: String },
+          gear: { type: String },
+        },
+      ],
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    approved: {
+      type: Boolean,
+      default: false,
+    },
 
-		img: {
-			type: String,
-		},
+    img: {
+      type: String,
+    },
 
-		isEmailVerified: {
-			type: Boolean,
-		},
+    isEmailVerified: {
+      type: Boolean,
+    },
 
-		emailVerifiedDate: {
-			type: Date,
-		},
+    emailVerifiedDate: {
+      type: Date,
+    },
 
-		verificationExpiresAt: {
-			type: Date,
-		},
-	},
-	{
-		timestamps: true,
-	},
+    verificationExpiresAt: {
+      type: Date,
+    },
+  },
+  {
+    timestamps: true,
+  },
 );
 
 export type UserDocument = InferSchemaType<typeof UserSchema>;
