@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import type { Document } from "mongoose";
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import {
   handleApproval,
   handleDelete,
@@ -37,7 +37,7 @@ export interface UpdateRequestBody {
   terms?: boolean;
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const body: UpdateRequestBody = await req.json();
     const { id, records, type, data, img } = body;
