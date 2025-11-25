@@ -1,10 +1,10 @@
 import { useSession } from "next-auth/react";
-import React, { useCallback, useEffect, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Loader } from "../Loader";
 import { HeaderTable } from "./HeaderTable";
 import { RowTable } from "./RowTable";
 import type { UsersData } from "./types";
-import { NextResponse } from "next/server";
 
 interface SortingExercise {
   exercise: "lift" | "squat" | "press";

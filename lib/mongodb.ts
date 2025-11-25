@@ -1,14 +1,11 @@
-// lib/mongoose.ts
-
 import dns from "dns";
 import mongoose from "mongoose";
 
-dns.setDefaultResultOrder?.("ipv4first"); // 👈 pomaga, gdy IPv6/SRV bruździ
+dns.setDefaultResultOrder?.("ipv4first");
 mongoose.set("strictQuery", true);
-mongoose.set("bufferCommands", false); // od razu pokaże realny błąd zamiast 10s bufora
+mongoose.set("bufferCommands", false);
 
 declare global {
-  // eslint-disable-next-line no-var
   var _mongooseConn: Promise<typeof mongoose> | undefined;
 }
 
@@ -19,22 +16,17 @@ export async function connectDB() {
 
   global._mongooseConn = mongoose
     .connect(uri, {
-      serverSelectionTimeoutMS: 5000, // dobór serwera
-      connectTimeoutMS: 5000, // nawiązanie TCP/TLS
-      socketTimeoutMS: 10000, // I/O po połączeniu
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
+      socketTimeoutMS: 10000,
     })
     .then((m) => {
       if (process.env.NODE_ENV !== "production") mongoose.set("debug", true);
       return m;
     })
     .catch((e) => {
-      console.error(
-        "Mongo connect fail:",
-        e?.name,
-        (e as any)?.code,
-        e?.message,
-      );
-      global._mongooseConn = undefined; // pozwól próbować ponownie
+      console.error("Mongo connect fail:", e?.name, e?.code, e?.message);
+      global._mongooseConn = undefined;
       throw e;
     });
 
