@@ -1,15 +1,29 @@
 "use client";
 
+import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/Button";
 import Card from "@/components/Card";
 import { ImageWithFallback } from "@/components/Image";
 import { Loader } from "@/components/Loader";
 import { Nav } from "@/components/Nav";
-import { useSession } from "next-auth/react";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 import FallbackImg from "../assets/9dca345c5519d191af167abedf3b76ac.jpg";
 import EditIcon from "../assets/edit-icon-511x512-ir85i9io.png";
+
+type RecordEntry = {
+  exercise: string;
+  classic: number | null;
+  gear: number | null;
+};
+
+type UserState = {
+  name: string;
+  email: string;
+  records: RecordEntry[];
+  img: string;
+};
 
 const toBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -24,7 +38,7 @@ export default function Page() {
   const slug = params.slug as string;
 
   const [isEdit, setIsEdit] = useState(false);
-  const [user, setUser] = useState({
+  const [user, setUser] = useState<UserState>({
     name: "",
     email: "",
     records: [],
@@ -58,7 +72,8 @@ export default function Page() {
       name: value,
     }));
   };
-  const fetchData = async () => {
+
+  const fetchData = useCallback(async () => {
     try {
       const res = await fetch(`/api/users/${slug}`, { method: "GET" });
       const { name, email, records, img } = await res.json();
@@ -69,14 +84,13 @@ export default function Page() {
         records: records,
         img: `${img}?cb=${Date.now()}`,
       });
-      console.log("fetching");
 
       setIsLoading(false);
     } catch (err) {
       console.error("Błąd fetchowania danych:", err);
       setIsLoading(false);
     }
-  };
+  }, [slug]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsLoading(true);
@@ -94,9 +108,9 @@ export default function Page() {
         },
         body: JSON.stringify({ img: base64, id: slug, type: "imageUpdate" }),
       });
-      update({ image: file });
+      await update({ image: file });
       setIsLoading(false);
-      fetchData();
+      await fetchData();
     } catch (error) {
       alert(`Coś poszło nie tak ${error}`);
       setIsLoading(false);
@@ -135,8 +149,8 @@ export default function Page() {
   }, [status, router]);
 
   useEffect(() => {
-    fetchData();
-  }, [slug]);
+    void fetchData();
+  }, [fetchData]);
 
   return (
     <div className="profile">

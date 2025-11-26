@@ -4,8 +4,9 @@ import mongoose from "mongoose";
 dns.setDefaultResultOrder?.("ipv4first");
 mongoose.set("strictQuery", true);
 mongoose.set("bufferCommands", false);
-// eslint-disable-next-line no-var
+
 declare global {
+  // eslint-disable-next-line no-var
   var _mongooseConn: Promise<typeof mongoose> | undefined;
 }
 

@@ -42,8 +42,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const body: UpdateRequestBody = await req.json();
     const { id, records, type, data, img } = body;
 
-    console.log("body", body);
-
     await connectDB();
 
     switch (type) {
@@ -140,19 +138,7 @@ export async function GET() {
 
     return NextResponse.json(users, { status: 200 });
   } catch (e) {
-    const err =
-      e instanceof Error
-        ? {
-            name: e.name,
-            message: e.message,
-            ...(process.env.NODE_ENV !== "production" && { stack: e.stack }),
-            ...((e as any).code && { code: (e as any).code }),
-            ...((e as any).reason && { reason: (e as any).reason }),
-          }
-        : { error: String(e) };
-
-    console.log("err", err);
-    return NextResponse.json({ message: "Error", err }, { status: 500 });
+    return NextResponse.json({ message: "Error", e }, { status: 500 });
   }
 }
 
