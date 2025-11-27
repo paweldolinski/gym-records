@@ -12,6 +12,16 @@
         }
     }
 
+    input[type="checkbox"] {
+        height: 20px;
+        width: 20px;
+
+        &.error-active {
+            outline: solid red 2px;
+            margin-bottom: 5px;
+        }
+    }
+
     &__error-msg {
         margin-bottom: 20px;
         color: red;

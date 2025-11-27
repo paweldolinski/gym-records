@@ -4,18 +4,18 @@ import { Nav } from "./components/Nav";
 import { Table } from "./components/Table";
 
 export default function SignIn() {
-	const { data } = useSession();
+  const { data } = useSession();
 
-	const name = data?.user?.name ?? "";
-	const img = data?.user?.image ?? "";
-	const id = data?.user?.id;
+  const name = data?.user?.name ?? "";
+  const img = data?.user?.image ?? "";
+  const id = data?.user?.id;
 
-	return (
-		<div className="main-container">
-			<Nav name={name} img={img} id={id} />
-			<main>
-				<Table />
-			</main>
-		</div>
-	);
+  return (
+    <div className="main-container">
+      <Nav name={name} img={img} id={id} />
+      <main>
+        <Table />
+      </main>
+    </div>
+  );
 }
