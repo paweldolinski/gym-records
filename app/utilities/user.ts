@@ -12,12 +12,12 @@ const emptyRecords = [
 ];
 
 interface CreateNewUserProps {
-  email: string | null | undefined;
+  email: string;
   password?: string;
-  name: string | null | undefined;
+  name: string;
   image?: string | null;
   provider?: string;
-  terms: boolean;
+  terms?: boolean;
 }
 
 export const verifyEmail = async (id: string) => {

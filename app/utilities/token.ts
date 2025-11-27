@@ -36,7 +36,7 @@ const getVerificationTokenByEmail = async (
   email: string,
 ): Promise<VerificationTokenDocument | null> => {
   try {
-    await VerificationToken.find({ email: email });
+    return await VerificationToken.findOne({ email: email });
   } catch (error) {
     console.log(`getVerificationTokenByEmail ${error}`);
     return null;

@@ -4,7 +4,7 @@ import User from "../../models/User";
 import { createNewUser } from "./user";
 
 export const handleRegister = async (body: UpdateRequestBody) => {
-  const { name, email, password, terms } = body;
+  const { name, email, password } = body;
 
   if (!name || !email || !password) {
     return NextResponse.json(
@@ -14,9 +14,13 @@ export const handleRegister = async (body: UpdateRequestBody) => {
   }
 
   try {
-    return await createNewUser({ name, email, password, terms });
+    return await createNewUser({ name, email, password });
   } catch (error) {
     console.log(error);
+    return NextResponse.json(
+      { message: "Something went wrong" },
+      { status: 500 },
+    );
   }
 };
 

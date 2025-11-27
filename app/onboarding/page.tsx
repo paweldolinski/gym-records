@@ -8,13 +8,17 @@ import { Input } from "@/components/Input/input";
 import { Loader } from "@/components/Loader";
 import { Nav } from "@/components/Nav";
 
+type FormDataState = {
+  terms: boolean;
+  healthConsent: boolean;
+};
 export default function Onboarding() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataState>({
     terms: false,
     healthConsent: false,
   });
   const [error, setError] = useState<string | null>(null);
-  const [errors, setErrors] = useState<object>({
+  const [errors, setErrors] = useState<Record<string, boolean>>({
     terms: false,
     healthConsent: false,
   });
@@ -23,11 +27,11 @@ export default function Onboarding() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
-  const validate = (formData) => {
-    const errors: object = {};
+  const validate = (formData: FormDataState) => {
+    const errors: Record<string, boolean> = {};
 
     Object.entries(formData).forEach(([k, v]) => {
-      if (v === "" || v === false) {
+      if (!v) {
         errors[k] = true;
       }
     });

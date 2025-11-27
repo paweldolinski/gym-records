@@ -1,6 +1,7 @@
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+import type React from "react";
 import FallbackImg from "../../assets/9dca345c5519d191af167abedf3b76ac.jpg";
 import { Button } from "../Button";
 import { ImageWithFallback } from "../Image";
@@ -29,7 +30,7 @@ export const Nav: React.FC<NavProps> = ({ name, img, id }) => {
           </div>
         ) : (
           <>
-            {pathname === `/${id}` ? null : (
+            {pathname === `/${id}` || !id ? null : (
               <Link href={id}>
                 <div className="nav__user-box">
                   <ImageWithFallback

@@ -39,7 +39,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const validate = (formData: FormDataType) => {
-    const errors: ErrorsType = {};
+    const errors: Record<string, boolean | string> = {};
     const namePattern =
       "^(?=(?:.*[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]){3,})[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż ]+$";
     const nameRegex = new RegExp(namePattern);
@@ -111,7 +111,7 @@ export default function RegisterPage() {
           email: "",
           password: "",
           confirmPassword: "",
-          terms: null,
+          terms: false,
         });
         setIsLoading(false);
         setSuccess(true);
@@ -178,7 +178,7 @@ export default function RegisterPage() {
               required={true}
               value={formData.confirmPassword}
               errorMsg={"Hasła nie są takie same."}
-              pattern={`^${formData.password.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}$`}
+              pattern={`^${formData?.password?.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}$`}
               placeholder="Powtórz hasło"
               error={errors?.confirmPassword}
             />

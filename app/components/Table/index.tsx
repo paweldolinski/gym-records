@@ -35,12 +35,6 @@ export const Table = () => {
       setData(json ?? []);
     } catch (err) {
       console.error(err);
-      console.error("DB ERROR:", {
-        name: err?.name,
-        code: err?.code,
-        msg: err?.message,
-      });
-      // return NextResponse.json({ name: err?.name, code: err?.code, msg: err?.message }, { status: 500 });
       throw new Error("Nie udało się załadować danych użytkowników");
     } finally {
       setLoading(false);
