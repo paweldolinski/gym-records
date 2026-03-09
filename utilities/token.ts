@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { v4 as uuid4 } from "uuid";
 import VerificationToken, {
   type VerificationTokenDocument,
-} from "../../models/verificationToken";
+} from "../models/verificationToken";
 
 export const getVerificationTokenByToken = async (token: string) => {
   try {

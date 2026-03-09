@@ -1,11 +1,11 @@
 "use client";
 
-import Card from "@/components/Card";
-import { Loader } from "@/components/Loader";
-import { newVerification } from "@/utilities/newVerification";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import Card from "@/components/Card";
+import { Loader } from "@/components/Loader";
+import { newVerification } from "../../utilities/newVerification";
 
 const VerifyEmailFormContent = () => {
   const [message, setMessage] = useState<string | undefined>(undefined);
