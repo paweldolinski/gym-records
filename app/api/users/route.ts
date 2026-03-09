@@ -1,15 +1,15 @@
 import { v2 as cloudinary } from "cloudinary";
 import type { Document } from "mongoose";
 import { type NextRequest, NextResponse } from "next/server";
+import { connectDB } from "../../../lib/mongodb";
+import User, { type UserDocument } from "../../../models/User";
 import {
   handleApproval,
   handleDelete,
   handleRegister,
   handleUpdateProfile,
   handleUpdateRecord,
-} from "@/utilities/userActions";
-import { connectDB } from "../../../lib/mongodb";
-import User, { type UserDocument } from "../../../models/User";
+} from "../../../utilities/userApi";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

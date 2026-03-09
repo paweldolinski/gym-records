@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { findUserBySlug } from "@/utilities/user";
 import { connectDB } from "../../../../lib/mongodb";
+import { findUserBySlug } from "../../../../utilities/userApi";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const { pathname } = new URL(req.url);

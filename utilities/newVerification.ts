@@ -1,8 +1,8 @@
 "use server";
 import mongoose from "mongoose";
-import { connectDB } from "../../lib/mongodb";
+import { connectDB } from "../lib/mongodb";
 import { deleteVerificationToken, getVerificationTokenByToken } from "./token";
-import { findUser, verifyEmail } from "./user";
+import { findUser, verifyEmail } from "./userApi";
 
 export const newVerification = async (token: string) => {
   console.log("Checking DB connection...");
