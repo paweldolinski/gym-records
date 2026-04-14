@@ -30,9 +30,11 @@ export const Table = () => {
       if (!res.ok)
         throw new Error("Błąd podczas pobierania danych użytkowników");
 
-      const json: UsersData[] = await res.json();
+      const json = await res.json();
+      const users: UsersData[] = json?.data 
+  
 
-      setData(json ?? []);
+      setData(users);
     } catch (err) {
       console.error(err);
       throw new Error("Nie udało się załadować danych użytkowników");
@@ -81,13 +83,18 @@ export const Table = () => {
       setLoading(true);
 
       try {
-        const res = await fetch("/api/users", {
+        const res = await fetch("/api/users/approval", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type: actionType, id }),
+          body: JSON.stringify({ approve: true, id }),
         });
-        if (res.status !== 201)
+
+        if (!res.ok) {
+          const errorBody = await res.json().catch(() => null);
+          console.error("Approval failed", errorBody);
           throw new Error("Nie udało się zaktualizować użytkownika");
+        }
+
         await fetchUsers();
       } catch (err) {
         console.error(err);
@@ -116,7 +123,7 @@ export const Table = () => {
     <div className={`table container ${isGuest ? "center" : null}`}>
       <div className="table__table-wrapper">
         <HeaderTable setSortingExerciseAndType={setSortingExerciseAndType} />
-        {(sortedData || data)?.map(
+        {sortedData?.map(
           ({ records, _id, name, email, approved, img, isEmailVerified }) =>
             isEmailVerified ? (
               <RowTable

@@ -42,11 +42,16 @@ export const RowTable = ({
     exercise: string,
     type: "classic" | "gear",
   ) => {
-    const { value } = e.target;
+    const rawValue = e.target.value;
+    const digitsOnly = rawValue.replace(/\D/g, "");
+    const normalizedValue =
+      digitsOnly.length > 1 ? digitsOnly.replace(/^0+/, "") : digitsOnly;
 
     setInputData((prev) =>
       prev.map((item) =>
-        item.exercise === exercise ? { ...item, [type]: value } : item,
+        item.exercise === exercise
+          ? { ...item, [type]: normalizedValue }
+          : item,
       ),
     );
   };
@@ -55,12 +60,12 @@ export const RowTable = ({
     setIsEdit(false);
 
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/users/record", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: _id,
           records: inputData,
-          type: "recordsUpdate",
         }),
       });
 
@@ -82,17 +87,21 @@ export const RowTable = ({
 
   const onDelete = async (id: string) => {
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/users/delete", {
         method: "DELETE",
-        body: JSON.stringify({ id: id, type: "delete" }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
       });
 
-      const { status } = await response.json();
-      if (status === 200) {
-        setDataAction((prev) =>
-          prev ? prev.filter((user) => user._id !== id) : [],
-        );
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        console.log("Delete failed", errorBody);
+        return;
       }
+
+      setDataAction((prev) =>
+        prev ? prev.filter((user) => user._id !== id) : [],
+      );
     } catch (error) {
       console.log(error);
     }

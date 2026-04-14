@@ -68,7 +68,7 @@ const LoginPage = () => {
               Zaloguj się
             </button>
             <p>
-              Nie masz jeszcze konta?{" "}
+              Nie masz jeszcze konta?
               <Link href="/register">Zarejestruj się</Link>
             </p>
             <div className="login__separator">Albo</div>
@@ -76,7 +76,6 @@ const LoginPage = () => {
               type="button"
               className="btn-google"
               onClick={handleGoogleLogin}
-              disabled={!!error}
             >
               Zaloguj się z Google
             </button>

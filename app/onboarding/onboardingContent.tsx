@@ -62,7 +62,7 @@ export default function OnboardingContent() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/users/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,7 +74,6 @@ export default function OnboardingContent() {
             healthConsent: true,
             termsAndHealthConsentTimestamp: new Date(),
           },
-          type: "profileUpdate",
         }),
       });
 

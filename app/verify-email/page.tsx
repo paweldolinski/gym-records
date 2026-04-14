@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import Card from "@/components/Card";
 import { Loader } from "@/components/Loader";
-import { newVerification } from "../../utilities/newVerification";
 
 const VerifyEmailFormContent = () => {
   const [message, setMessage] = useState<string | undefined>(undefined);
@@ -23,15 +22,13 @@ const VerifyEmailFormContent = () => {
       console.log("Verifying with token:", token);
 
       try {
-        const response = await newVerification(token);
-        const { success, error } = response || {};
+        const response = await fetch(`/api/verify-email?token=${encodeURIComponent(token)}`);
+        const data = await response.json();
+        const success = data?.success === true;
+        const message = success ? data?.data?.message : data?.message || "Verification failed";
 
-        setMessage(success || error || "Verification failed");
-        if (success) {
-          setSuccess(true);
-        } else {
-          setSuccess(false);
-        }
+        setMessage(message);
+        setSuccess(success);
       } catch (error) {
         console.error("Error in verification:", error);
         setMessage(`An unexpected error occurred ${error}`);

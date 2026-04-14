@@ -17,6 +17,7 @@ export async function connectDB() {
 
   global._mongooseConn = mongoose
     .connect(uri, {
+      dbName: "sokol-krzywin",
       serverSelectionTimeoutMS: 5000,
       connectTimeoutMS: 5000,
       socketTimeoutMS: 10000,

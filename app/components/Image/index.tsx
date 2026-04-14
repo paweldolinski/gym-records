@@ -18,7 +18,11 @@ export const ImageWithFallback = ({
   variant,
   onAction,
 }: ImageWithFallbackProps) => {
-  const [imgSrc, setImgSrc] = useState<string>(src || fallbackSrc);
+  const validSrc =
+    src && (src.startsWith("/") || src.startsWith("http://") || src.startsWith("https://"))
+      ? src
+      : fallbackSrc;
+  const [imgSrc, setImgSrc] = useState<string>(validSrc);
 
   return (
     <div className={`img ${variant}`} onClick={onAction}>
@@ -28,7 +32,7 @@ export const ImageWithFallback = ({
         alt={alt}
         fill
         sizes="40px"
-        style={{ objectFit: "cover" }} // brak rozciągania, ładne kadrowanie
+        style={{ objectFit: "cover" }}
       />
     </div>
   );
