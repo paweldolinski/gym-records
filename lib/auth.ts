@@ -3,7 +3,7 @@ import type { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import User from "../models/User";
-import { createNewUser } from "../utilities/userApi";
+import { createNewUser } from "../lib/services/userService";
 import { connectDB } from "./mongodb";
 
 export const authOptions: AuthOptions = {
@@ -64,7 +64,12 @@ export const authOptions: AuthOptions = {
       if (!email || !name || !provider) return false;
 
       try {
-        await createNewUser({ email, name, image, provider });
+        await createNewUser({
+          email,
+          name,
+          image: image ?? undefined,
+          provider: "google",
+        });
 
         console.log("callbacks", image);
 

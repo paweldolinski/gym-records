@@ -1,24 +1,23 @@
-import { type NextRequest, NextResponse } from "next/server";
-import { connectDB } from "../../../../lib/mongodb";
-import { findUserBySlug } from "../../../../utilities/userApi";
+import { findUserBySlug } from "../../../../lib/services/userService";
+import { errorResponse, successResponse } from "../../../../lib/api/response";
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: Request) {
   const { pathname } = new URL(req.url);
-  const parts = pathname.split("/").filter(Boolean);
-  const slug = parts[parts.indexOf("users") + 1];
+  const slug = pathname.split("/").pop();
+
+  if (!slug) {
+    return errorResponse("Missing slug parameter", 400);
+  }
 
   try {
-    await connectDB();
     const user = await findUserBySlug(slug);
 
     if (!user) {
-      return NextResponse.json(
-        { message: "Użytkownik nie znaleziony" },
-        { status: 404 },
-      );
+      return errorResponse("Użytkownik nie znaleziony", 404);
     }
-    return NextResponse.json(user, { status: 200 });
+
+    return successResponse(user, 200);
   } catch (err) {
-    return NextResponse.json({ message: "Błąd", err }, { status: 500 });
+    return errorResponse("Błąd serwera", 500, { error: err });
   }
 }

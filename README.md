@@ -34,3 +34,18 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+
+
+rozdzieliłem warstwy: app/api/... jako transport, lib/services/... jako logika, userService.ts jako DB
+rozbiłem jedną dużą trasę api/users na osobne route’y: register, profile, record, image, approval, delete
+przeniosłem logikę tokenów i weryfikacji e-mail do token.ts i verificationService.ts
+usunąłem przestarzały folder utilities i stare importy serwera w frontendzie
+poprawiłem page.tsx, by wywoływał API (/api/verify-email) zamiast bezpośrednio serwerowej funkcji
+w page.tsx naprawiłem generowanie next/image src, aby nie przesyłać "?cb=..." jako źródła
+dodałem wspólną walidację payloadów w userValidators.ts
+przerzuciłem API na ujednolicone odpowiedzi successResponse / errorResponse
+poprawiłem listę użytkowników w tabeli, aby zawsze obsługiwać wyniki jako tablicę
+naprawiłem usuwanie admina, żeby lista od razu się odświeżała bez reloadu
+poprawiłem zatwierdzanie użytkownika, bo klient błędnie oczekiwał statusu 201 zamiast 200

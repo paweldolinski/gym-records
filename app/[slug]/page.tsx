@@ -82,7 +82,7 @@ export default function Page() {
         name: name,
         email: email,
         records: records,
-        img: `${img}?cb=${Date.now()}`,
+        img: img ? `${img}?cb=${Date.now()}` : "",
       });
 
       setIsLoading(false);
@@ -101,12 +101,12 @@ export default function Page() {
     const base64 = await toBase64(file);
 
     try {
-      await fetch("/api/users", {
+      await fetch("/api/users/image", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ img: base64, id: slug, type: "imageUpdate" }),
+        body: JSON.stringify({ img: base64, id: slug }),
       });
       await update({ image: file });
       setIsLoading(false);
@@ -126,9 +126,12 @@ export default function Page() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/users/profile", {
         method: "POST",
-        body: JSON.stringify({ id: slug, data: user, type: "profileUpdate" }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: slug, data: user }),
       });
 
       const { updatedData } = await response.json();

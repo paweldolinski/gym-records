@@ -90,7 +90,7 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +100,6 @@ export default function RegisterPage() {
           email: formData.email,
           password: formData.password,
           terms: true,
-          type: "register",
         }),
       });
 
