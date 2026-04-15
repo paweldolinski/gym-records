@@ -76,15 +76,22 @@ export default function Page() {
   const fetchData = useCallback(async () => {
     try {
       const res = await fetch(`/api/users/${slug}`, { method: "GET" });
-      const { name, email, records, img } = await res.json();
+      const json = await res.json();
 
-      setUser({
-        name: name,
-        email: email,
-        records: records,
+      if (!res.ok || !json.success) {
+        throw new Error(json.message || "Błąd pobierania danych");
+      }
+
+      const { name, email, records, img } = json.data;
+
+      const userData = {
+        name: name ?? "",
+        email: email ?? "",
+        records: records ?? [],
         img: img ? `${img}?cb=${Date.now()}` : "",
-      });
+      };
 
+      setUser(userData);
       setIsLoading(false);
     } catch (err) {
       console.error("Błąd fetchowania danych:", err);
@@ -134,7 +141,7 @@ export default function Page() {
         body: JSON.stringify({ id: slug, data: user }),
       });
 
-      const { updatedData } = await response.json();
+      const { data:{updatedData} } = await response.json();
 
       setUser(updatedData);
       setIsLoading(false);
